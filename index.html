@@ -89,9 +89,7 @@ input,select,textarea{width:100%;font:inherit;padding:7px 9px;border:1px solid v
     </div>
     <button type="button" class="login-submit" id="btn-login-submit">Giriş Yap</button>
     <div id="login-feedback" class="login-msg"></div>
-    <div style="margin-top:14px;padding-top:10px;border-top:1px dashed var(--bd);font-size:12px">
-      <a href="javascript:void(0)" id="btn-login-reset" style="color:var(--mut);text-decoration:none">Giriş yapamıyor musunuz? Şifreyi Sıfırla (aydin123)</a>
-    </div>
+
   </div>
 </div>
 
@@ -943,8 +941,8 @@ $("#hlogo").src=LOGO;loadLocal();render();
     // KATI VE BİREBİR EŞLEŞME:
     // Kullanıcı adı birebir aynı olmalıdır (Büyük/küçük harf ve Türkçe karakter BİREBİR AYNI olmalı: 'Aydın' ise sadece 'Aydın' kabul edilir).
     const uOk = (enteredUser === expectedU);
-    // Şifre: Buluttaki şifre VEYA yerel kayıtlı şifre VEYA varsayılan "aydin123" ile birebir eşleşmeli
-    const pOk = (enteredPass === expectedP || enteredPass === getLocalPass() || enteredPass === "aydin123");
+    // Şifre: Yalnızca belirlenmiş aktif şifre ile birebir eşleşmeli (arka kapı yok)
+    const pOk = (enteredPass === expectedP || enteredPass === getLocalPass());
 
     if (uOk && pOk) {
       if (feedback) feedback.style.display = "none";
@@ -999,36 +997,7 @@ $("#hlogo").src=LOGO;loadLocal();render();
     if (typeof toast === "function" && !reasonMsg) toast("Güvenli çıkış yapıldı.");
   };
 
-  async function resetCredentialsToDefault() {
-    const confirmReset = confirm("Şifreniz varsayılan olan 'aydin123' olarak sıfırlanacak ve hem bu cihaza hem buluta kaydedilecek. Onaylıyor musunuz?");
-    if (!confirmReset) return;
 
-    localStorage.setItem(USER_STORE, "Aydın");
-    localStorage.setItem(PASS_STORE, "aydin123");
-    
-    if (typeof db !== "undefined" && db) {
-      try {
-        await db.collection("settings").doc("auth").set({
-          user: "Aydın",
-          pass: "aydin123",
-          updatedAt: new Date().toISOString()
-        });
-      } catch (e) {
-        console.warn("Bulutta sıfırlama hatası:", e);
-      }
-    }
-
-    const usrInput = document.getElementById("login-usr");
-    const pwdInput = document.getElementById("login-pwd");
-    const feedback = document.getElementById("login-feedback");
-    if (usrInput) usrInput.value = "Aydın";
-    if (pwdInput) pwdInput.value = "aydin123";
-    if (feedback) {
-      feedback.textContent = "Şifre 'aydin123' olarak sıfırlandı. 'Giriş Yap' butonuna basabilirsiniz.";
-      feedback.style.color = "var(--ok, #1b7447)";
-      feedback.style.display = "block";
-    }
-  }
 
   window.openChangePasswordModal = function() {
     const curU = getLocalUser();
@@ -1082,7 +1051,7 @@ $("#hlogo").src=LOGO;loadLocal();render();
       const creds = await fetchCloudCredentials();
       const activeP = creds.pass;
 
-      if (curP !== activeP && curP !== getLocalPass() && curP !== "aydin123") {
+      if (curP !== activeP && curP !== getLocalPass()) {
         if (typeof toast === "function") toast("Mevcut şifreniz hatalı!");
         return;
       }
@@ -1145,10 +1114,7 @@ $("#hlogo").src=LOGO;loadLocal();render();
       btnSubmit.addEventListener("click", performLogin);
     }
 
-    const btnReset = document.getElementById("btn-login-reset");
-    if (btnReset) {
-      btnReset.addEventListener("click", resetCredentialsToDefault);
-    }
+
     
     const usrInput = document.getElementById("login-usr");
     if (usrInput) {
