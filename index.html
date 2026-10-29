@@ -107,6 +107,8 @@ input,select,textarea{width:100%;font:inherit;padding:7px 9px;border:1px solid v
 <div class="c" style="padding:0" id="list"></div>
 </div>
 <div id="modal"></div><div id="doc"></div><div id="cat"></div><div id="imp"></div><div id="inq"></div><div id="thm"></div><div id="fu"></div><div id="bkm" style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;z-index:50"></div><div id="toast"></div><datalist id="gs"></datalist><datalist id="cu"></datalist><datalist id="pl"></datalist><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <datalist id="ds"></datalist>
 <script>
 const $=s=>document.querySelector(s);
@@ -135,10 +137,31 @@ function downloadBlob(blob, filename){
   },150);
 }
 
-async function persist(q){const i=quotes.findIndex(x=>x.id===q.id);if(i<0)quotes.push(q);else quotes[i]=q;
- if(db){try{await db.doc("quotes/"+q.id).set(q)}catch(e){toast("Kaydedilemedi")}}else saveLocal();render()}
-async function removeQ(id){quotes=quotes.filter(x=>x.id!==id);
- if(db){try{await db.doc("quotes/"+id).delete()}catch(e){}}else saveLocal();render()}
+async function persist(q){
+  const i=quotes.findIndex(x=>x.id===q.id);
+  if(i<0)quotes.push(q);else quotes[i]=q;
+  saveLocal();
+  render();
+  if(db){
+    try{
+      await db.collection("quotes").doc(q.id).set(q);
+    }catch(e){
+      console.warn("Cloud save error:", e);
+    }
+  }
+}
+async function removeQ(id){
+  quotes=quotes.filter(x=>x.id!==id);
+  saveLocal();
+  render();
+  if(db){
+    try{
+      await db.collection("quotes").doc(id).delete();
+    }catch(e){
+      console.warn("Cloud delete error:", e);
+    }
+  }
+}
 const calc=q=>{const sub=q.items.reduce((a,i)=>a+(i.opt?0:(+i.qty||0)*(+i.price||0)),0);return{sub,vat:0,tot:sub}};
 const lastSigner=()=>{const s=[...quotes].filter(x=>x.signer).sort((a,b)=>b.date.localeCompare(a.date))[0];return s?s.signer:"Aydın SARIKAYA, Elektrik Mühendisi"};
 const eff=q=>q.status==="sent"&&addDays(q.date,+q.valid||0)<today()?"expired":q.status;
@@ -598,9 +621,9 @@ function expCat(){
    toast("Kalem listesi indirildi");
  }catch(e){toast("Dışa aktarılamadı")}}
 function dedupCat(){const seen={};catalog.slice().forEach(z=>{const k=bkey(z);if(seen[k])delCat(z.id);else seen[k]=1})}
-function saveCat(items){items.filter(i=>i.desc).forEach(i=>{const k=bkey(i),x0=catalog.findIndex(z=>bkey(z)===k),id=x0>=0?catalog[x0].id:ckey(i),c={id,group:nk(i.group||""),desc:String(i.desc).replace(/\r\n?/g,"\n").trim(),brand:nk(i.brand||""),unit:nk(i.unit||"")||"Adet",price:+i.price||0};if(x0<0)catalog.push(c);else catalog[x0]=c;catalog.filter(z=>z.id!==id&&bkey(z)===k).forEach(z=>delCat(z.id));if(db){try{db.doc("catalog/"+id).set(c).catch(()=>{})}catch(e){}}});
- if(!db)try{localStorage.setItem(LS2,JSON.stringify(catalog))}catch(e){}}
-function delCat(id){catalog=catalog.filter(x=>x.id!==id);if(db){try{db.doc("catalog/"+id).delete().catch(()=>{})}catch(e){}}else try{localStorage.setItem(LS2,JSON.stringify(catalog))}catch(e){}}
+function saveCat(items){items.filter(i=>i.desc).forEach(i=>{const k=bkey(i),x0=catalog.findIndex(z=>bkey(z)===k),id=x0>=0?catalog[x0].id:ckey(i),c={id,group:nk(i.group||""),desc:String(i.desc).replace(/\r\n?/g,"\n").trim(),brand:nk(i.brand||""),unit:nk(i.unit||"")||"Adet",price:+i.price||0};if(x0<0)catalog.push(c);else catalog[x0]=c;catalog.filter(z=>z.id!==id&&bkey(z)===k).forEach(z=>delCat(z.id));if(db){try{db.collection("catalog").doc(id).set(c).catch(()=>{})}catch(e){}}});
+ try{localStorage.setItem(LS2,JSON.stringify(catalog))}catch(e){}}
+function delCat(id){catalog=catalog.filter(x=>x.id!==id);if(db){try{db.collection("catalog").doc(id).delete().catch(()=>{})}catch(e){}}try{localStorage.setItem(LS2,JSON.stringify(catalog))}catch(e){}}
 function renderCat(mode){const f=lc($("#cs")?$("#cs").value:"");
  const L=catalog.filter(c=>!f||lc(c.desc+" "+c.brand+" "+c.group).includes(f)).sort((a,b)=>(a.group||"").localeCompare(b.group||"","tr")||a.desc.localeCompare(b.desc,"tr"));
  $("#cl2").innerHTML=L.length?L.map(c=>'<div class="row2"><div><b style="white-space:pre-line">'+esc(c.desc)+'</b><div class="m">'+esc([c.group,c.brand,c.unit,(c.price||0).toLocaleString("tr-TR",{minimumFractionDigits:2})].filter(Boolean).join(" · "))+'</div></div><div class="acts">'+(mode==="pick"?'<button class="s p" data-a="cadd" data-id="'+c.id+'">Ekle</button>':'')+'<button class="s" data-a="cdel" data-id="'+c.id+'">Sil</button></div></div>').join(""):'<div class="empty">Liste boş. Teklif kaydettikçe kalemler buraya eklenir.</div>'}
@@ -861,4 +884,47 @@ function saveNewCredentials() {
 }
 
 $("#hlogo").src=LOGO;
+
+// --- Firebase Firestore Entegrasyonu ---
+const firebaseConfig = {
+  apiKey: "AIzaSyDPjkAg6VK9vpycH4holXzr1CPk2paE7RY",
+  authDomain: "aydinteklif.firebaseapp.com",
+  projectId: "aydinteklif",
+  storageBucket: "aydinteklif.firebasestorage.app",
+  messagingSenderId: "53975188607",
+  appId: "1:53975188607:web:fd4d89ad3967c68adaab4a",
+  measurementId: "G-52DT50MRXW"
+};
+
+try {
+  if (typeof firebase !== "undefined") {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    
+    // Buluttan teklifleri canlı dinle ve eşitle
+    db.collection("quotes").onSnapshot(s => {
+      if (s && s.docs) {
+        quotes = s.docs.map(x => Object.assign({}, x.data(), {id: x.id}));
+        saveLocal();
+        render();
+      }
+    }, err => {
+      console.warn("Firestore quotes sync uyarısı:", err);
+    });
+
+    // Buluttan kalem kataloğunu canlı dinle ve eşitle
+    db.collection("catalog").onSnapshot(s => {
+      if (s && s.docs) {
+        catalog = s.docs.map(x => Object.assign({}, x.data(), {id: x.id}));
+        try { localStorage.setItem(LS2, JSON.stringify(catalog)); } catch(e) {}
+        fillPl();
+      }
+    }, err => {
+      console.warn("Firestore catalog sync uyarısı:", err);
+    });
+  }
+} catch(e) {
+  console.warn("Firebase başlatılamadı:", e);
+}
+
 checkAuth();
