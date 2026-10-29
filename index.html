@@ -59,51 +59,9 @@ input,select,textarea{width:100%;font:inherit;padding:7px 9px;border:1px solid v
 .pg th{background:#333;color:#fff;border-color:#fff;vertical-align:bottom;text-align:center;padding:3px 5px}.pg th.l{text-align:left}.pg .gr td{border:0;font-weight:700}.tbx{margin-left:6.7%;background:#333;color:#fff;font-weight:700;border:1px solid #000;border-top:0;display:flex;justify-content:space-between;padding:1px 5px;line-height:1.25}.pg .tt td{background:#333;color:#fff;font-weight:700;border:1px solid #000;border-left:0;border-right:0}.pg .tt td:nth-child(2){border-left:1px solid #000}.pg .tt td:last-child{border-right:1px solid #000}.pre{white-space:pre-line}
 @page{size:A4;margin:0}
 @media print{.w,#modal,#toast{display:none!important}#doc{position:static!important;padding:0!important;overflow:visible!important;background:#fff}.noprint{display:none!important}.sheet{margin:0!important;page-break-after:always;break-after:page}#sheets{zoom:1!important}}
-
-/* Login Ekranı Stilleri */
-#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px}
-.login-box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:32px 28px;max-width:380px;width:100%;box-shadow:0 8px 30px rgba(0,0,0,.08);text-align:center}
-.login-logo{width:64px;height:64px;margin:0 auto 12px;display:block}
-.login-title{font:600 20px/1.2 Georgia,serif;margin:0 0 4px;color:var(--tx)}
-.login-sub{font-size:13px;color:var(--mut);margin:0 0 20px}
-.login-field{text-align:left;margin-bottom:14px}
-.login-field label{display:block;font-size:12px;color:var(--mut);margin-bottom:4px;font-weight:600}
-.login-field input{width:100%;padding:9px 12px;font:inherit;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);outline:none;box-sizing:border-box}
-.login-field input:focus{border-color:var(--ac)}
-.login-btn{width:100%;padding:10px;background:var(--ac);color:var(--acx);border:1px solid var(--ac);border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;margin-top:6px}
-.login-btn:hover{opacity:.9}
-.login-err{color:var(--bad);font-size:13px;margin-top:12px;min-height:18px;display:none}
-
 </style></head><body>
-
-
-<div id="login-screen">
-  <div class="login-box">
-    <img id="login-logo-img" alt="AYDN" class="login-logo">
-    <div style="font-weight:700;font-size:13px;color:var(--mut);margin-bottom:2px">Aydın SARIKAYA Mühendislik</div>
-    <h2 class="login-title">Teklif Takip Sistemi</h2>
-    <p class="login-sub">Devam etmek için lütfen giriş yapın</p>
-    <form id="login-form" onsubmit="return handleLogin(event)">
-      <div class="login-field">
-        <label for="l-user">Kullanıcı Adı</label>
-        <input type="text" id="l-user" autocomplete="username" required autofocus placeholder="Kullanıcı adınız (aydin)">
-      </div>
-      <div class="login-field">
-        <label for="l-pass">Şifre</label>
-        <input type="password" id="l-pass" autocomplete="current-password" required placeholder="aydin123">
-      </div>
-      <button type="submit" class="login-btn">Giriş Yap</button>
-      <div id="login-err" class="login-err"></div>
-      <div style="margin-top:16px;padding-top:12px;border-top:1px dashed var(--bd);font-size:12px">
-        <a href="javascript:void(0)" onclick="quickBypassLogin()" style="color:var(--blue);text-decoration:none;font-weight:600">Giriş yapamıyor musunuz? Tek tıkla açın</a>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div id="pwd-modal" style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;z-index:90"></div>
 <div class="w">
-<header><div style="display:flex;align-items:center;gap:12px"><img id="hlogo" alt="AYDN" style="width:52px;height:52px;display:block;flex:none"><div><div style="font-weight:700;font-size:15px;line-height:1.25">Aydın SARIKAYA Mühendislik Ltd. Şti.</div><h1 style="font-size:19px;margin-top:2px">Teklif Takip</h1></div></div><div><button data-a="thm" title="Tema" aria-label="Tema" style="padding:6px 9px;display:inline-flex;align-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.2 0-1.1.9-2 2-2H17a4 4 0 0 0 4-4c0-4.4-4-7.5-9-7.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/></svg></button> <button data-a="hide" id="hb" title="Tutarları gizle / göster" aria-label="Tutarları gizle / göster" style="padding:6px 9px;display:inline-flex;align-items:center"></button> <button data-a="backup" title="Verileri Yedekle / Geri Yükle">Yedekle / Yükle</button> <button data-a="chpwd" title="Giriş Bilgilerini / Şifreyi Değiştir">🔑 Şifre</button> <button data-a="logout" title="Güvenli Çıkış" style="color:var(--bad)">Çıkış</button> <button data-a="pdfi">PDF’den teklif ekle</button><input type="file" id="xp" accept="application/pdf,.pdf" multiple hidden> <button data-a="cat">Kalem listesi</button> <button class="p" data-a="new">+ Yeni teklif</button></div></header>
+<header><div style="display:flex;align-items:center;gap:12px"><img id="hlogo" alt="AYDN" style="width:52px;height:52px;display:block;flex:none"><div><div style="font-weight:700;font-size:15px;line-height:1.25">Aydın SARIKAYA Mühendislik Ltd. Şti.</div><h1 style="font-size:19px;margin-top:2px">Teklif Takip</h1></div></div><div><button data-a="thm" title="Tema" aria-label="Tema" style="padding:6px 9px;display:inline-flex;align-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.2 0-1.1.9-2 2-2H17a4 4 0 0 0 4-4c0-4.4-4-7.5-9-7.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/></svg></button> <button data-a="hide" id="hb" title="Tutarları gizle / göster" aria-label="Tutarları gizle / göster" style="padding:6px 9px;display:inline-flex;align-items:center"></button> <button data-a="backup" title="Verileri Yedekle / Geri Yükle">Yedekle / Yükle</button> <button data-a="pdfi">PDF’den teklif ekle</button><input type="file" id="xp" accept="application/pdf,.pdf" multiple hidden> <button data-a="cat">Kalem listesi</button> <button class="p" data-a="new">+ Yeni teklif</button></div></header>
 <div class="stats" id="stats"></div>
 <div id="due"></div>
 <div class="tabs" id="tabs"></div>
@@ -140,31 +98,10 @@ function downloadBlob(blob, filename){
   },150);
 }
 
-async function persist(q){
-  const i=quotes.findIndex(x=>x.id===q.id);
-  if(i<0)quotes.push(q);else quotes[i]=q;
-  saveLocal();
-  render();
-  if(db){
-    try{
-      await db.collection("quotes").doc(q.id).set(q);
-    }catch(e){
-      console.warn("Cloud save error:", e);
-    }
-  }
-}
-async function removeQ(id){
-  quotes=quotes.filter(x=>x.id!==id);
-  saveLocal();
-  render();
-  if(db){
-    try{
-      await db.collection("quotes").doc(id).delete();
-    }catch(e){
-      console.warn("Cloud delete error:", e);
-    }
-  }
-}
+async function persist(q){const i=quotes.findIndex(x=>x.id===q.id);if(i<0)quotes.push(q);else quotes[i]=q;
+ if(db){try{await db.doc("quotes/"+q.id).set(q)}catch(e){toast("Kaydedilemedi")}}else saveLocal();render()}
+async function removeQ(id){quotes=quotes.filter(x=>x.id!==id);
+ if(db){try{await db.doc("quotes/"+id).delete()}catch(e){}}else saveLocal();render()}
 const calc=q=>{const sub=q.items.reduce((a,i)=>a+(i.opt?0:(+i.qty||0)*(+i.price||0)),0);return{sub,vat:0,tot:sub}};
 const lastSigner=()=>{const s=[...quotes].filter(x=>x.signer).sort((a,b)=>b.date.localeCompare(a.date))[0];return s?s.signer:"Aydın SARIKAYA, Elektrik Mühendisi"};
 const eff=q=>q.status==="sent"&&addDays(q.date,+q.valid||0)<today()?"expired":q.status;
@@ -225,7 +162,7 @@ document.addEventListener("click",e=>{
  else if(a==="save")save();else if(a==="fu")showFu(id);else if(a==="fux")$("#fu").style.display="none";else if(a==="fuk"){window._fuk=id;[...$("#fu").querySelectorAll('[data-a="fuk"]')].forEach(x=>x.classList.toggle("sel2",x===b))}else if(a==="fusave")saveFu();else if(a==="fudel"){if(b.dataset.arm){delFu(+id)}else{b.dataset.arm="1";b.textContent="Emin misiniz? Sil";setTimeout(()=>{b.dataset.arm="";b.textContent="Sil"},3000)}}else if(a==="thm")showTheme();else if(a==="thmx")$("#thm").style.display="none";else if(a==="tmode"){themeMode=id;try{localStorage.setItem("teklif_mode",id)}catch(e){}applyTheme();showTheme()}else if(a==="tpal"){themePal=id;try{localStorage.setItem("teklif_pal",id)}catch(e){}applyTheme();showTheme()}else if(a==="hide"){hideAmt=!hideAmt;try{localStorage.setItem("teklif_hide",hideAmt?"1":"0")}catch(e){}setHb();render()}else if(a==="stat"){filter=id;render();$("#tabs").scrollIntoView({behavior:"smooth",block:"start"})}else if(a==="tab"){filter=id;render()}
  else if(a==="add"){$("#its").insertAdjacentHTML("beforeend",itemRow({group:([...document.querySelectorAll("#its .gp")].pop()||{}).value||"",desc:"",qty:1,price:0}))}
  else if(a==="rm"){const r=b.closest(".it");if(document.querySelectorAll("#its .it").length>1)r.remove();upd()}
- else if(a==="chpwd")showChangePasswordModal();else if(a==="logout")logout();else if(a==="backup")showBackup();else if(a==="bkx")$("#bkm").style.display="none";else if(a==="bkexp")exportDataJSON();else if(a==="bkimp")$("#bkfile").click();else if(a==="mailed")toast("Maili gönderdikten sonra “Takip yaptım”a basın");else if(a==="rowdel"){if(b.dataset.arm){removeQ(id);toast("Teklif silindi")}else{b.dataset.arm="1";b.textContent="Emin misiniz? Sil";setTimeout(()=>{b.dataset.arm="";b.textContent="Sil"},3000)}}else if(a==="doc"&&q)showDoc(q);else if(a==="cat")showCat("manage");else if(a==="catp")showCat("pick");else if(a==="inq"&&q)showInq(q);else if(a==="iqx")$("#inq").style.display="none";else if(a==="iqapp"){toast("Mail uygulaması açılıyor… açılmazsa kopyala düğmelerini kullanın");inqApp()}else if(a==="iqgm")inqGm();else if(a==="iqsh")inqShare();else if(a==="iqall")copy("Alıcı: "+$("#iq-to").value+"\nKonu: "+$("#iq-s").value+"\n\n"+$("#iq-b").value);else if(a==="iqc")copy($("#"+b.dataset.f).value);else if(a==="iqdone"&&q){$("#inq").style.display="none";const n=Object.assign({},q);n.log=(q.log||[]).concat(today());n.next=addDays(today(),q.follow||3);persist(n);toast("Sonraki takip: "+trDate(n.next))}else if(a==="pdfi")$("#xp").click();else if(a==="iclose"){window._pstop=true;$("#imp").style.display="none"}else if(a==="isave")saveImp();else if(a==="cimp")$("#xc").click();else if(a==="cexp")expCat();else if(a==="cclose")$("#cat").style.display="none";else if(a==="cadd"){const c=catalog.find(x=>x.id===id);if(c)applyImport([{group:c.group,desc:c.desc,brand:c.brand,unit:c.unit,qty:1,price:c.price}])}else if(a==="cdel"){delCat(id);renderCat(window._cm)}else if(a==="imp")$("#xf").click();else if(a==="tpl")tmplXlsx();else if(a==="clr"){$("#its").innerHTML=itemRow({unit:"Adet",desc:"",qty:1,price:0});upd()}else if(a==="pdf")savePdf(window._dq);else if(a==="print"){try{window.print()}catch(e){toast("Yazdırma bu ekranda kullanılamıyor")}}else if(a==="cdoc")$("#doc").style.display="none";else if(a==="qtxt"&&q)copy(quoteText(q));else if(a==="ftxt"&&q)copy(followText(q));
+ else if(a==="backup")showBackup();else if(a==="bkx")$("#bkm").style.display="none";else if(a==="bkexp")exportDataJSON();else if(a==="bkimp")$("#bkfile").click();else if(a==="mailed")toast("Maili gönderdikten sonra “Takip yaptım”a basın");else if(a==="rowdel"){if(b.dataset.arm){removeQ(id);toast("Teklif silindi")}else{b.dataset.arm="1";b.textContent="Emin misiniz? Sil";setTimeout(()=>{b.dataset.arm="";b.textContent="Sil"},3000)}}else if(a==="doc"&&q)showDoc(q);else if(a==="cat")showCat("manage");else if(a==="catp")showCat("pick");else if(a==="inq"&&q)showInq(q);else if(a==="iqx")$("#inq").style.display="none";else if(a==="iqapp"){toast("Mail uygulaması açılıyor… açılmazsa kopyala düğmelerini kullanın");inqApp()}else if(a==="iqgm")inqGm();else if(a==="iqsh")inqShare();else if(a==="iqall")copy("Alıcı: "+$("#iq-to").value+"\nKonu: "+$("#iq-s").value+"\n\n"+$("#iq-b").value);else if(a==="iqc")copy($("#"+b.dataset.f).value);else if(a==="iqdone"&&q){$("#inq").style.display="none";const n=Object.assign({},q);n.log=(q.log||[]).concat(today());n.next=addDays(today(),q.follow||3);persist(n);toast("Sonraki takip: "+trDate(n.next))}else if(a==="pdfi")$("#xp").click();else if(a==="iclose"){window._pstop=true;$("#imp").style.display="none"}else if(a==="isave")saveImp();else if(a==="cimp")$("#xc").click();else if(a==="cexp")expCat();else if(a==="cclose")$("#cat").style.display="none";else if(a==="cadd"){const c=catalog.find(x=>x.id===id);if(c)applyImport([{group:c.group,desc:c.desc,brand:c.brand,unit:c.unit,qty:1,price:c.price}])}else if(a==="cdel"){delCat(id);renderCat(window._cm)}else if(a==="imp")$("#xf").click();else if(a==="tpl")tmplXlsx();else if(a==="clr"){$("#its").innerHTML=itemRow({unit:"Adet",desc:"",qty:1,price:0});upd()}else if(a==="pdf")savePdf(window._dq);else if(a==="print"){try{window.print()}catch(e){toast("Yazdırma bu ekranda kullanılamıyor")}}else if(a==="cdoc")$("#doc").style.display="none";else if(a==="qtxt"&&q)copy(quoteText(q));else if(a==="ftxt"&&q)copy(followText(q));
  else if(a==="done"&&q){const n=Object.assign({},q);n.log=(q.log||[]).concat(today());n.next=addDays(today(),q.follow||3);persist(n);toast("Sonraki takip: "+trDate(n.next))}
  else if(a==="del"&&q&&confirm("Bu teklif silinsin mi?")){removeQ(id);$("#modal").style.display="none"}
 });
@@ -601,8 +538,9 @@ async function pdfImport(files){
  drawImp(files.length);
 }
 async function saveImp(){const R=window._pi||[];let n=0;
- for(const r of R){if(!r.sel||!r.q||!r.q.no)continue;if(quotes.some(x=>lc(x.no)===lc(r.q.no)))continue;
-  const q=Object.assign({},r.q,{id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),status:r.status||"sent"});delete q._total;delete q._guess;
+ for(const r of R){if(!r.sel||!r.q||!r.q.no)continue;// Güncellemeye izin ver
+  const existIdx=quotes.findIndex(x=>lc(x.no)===lc(r.q.no));
+  const q=Object.assign({},r.q,{id:(existIdx>=0?quotes[existIdx].id:(Date.now().toString(36)+Math.random().toString(36).slice(2,6))),status:r.status||"sent"});delete q._total;delete q._guess;
   q.next=q.status==="sent"?addDays(today(),3):"";await persist(q);saveCat(q.items);n++}
  window._pstop=true;$("#imp").style.display="none";toast(n+" teklif kaydedildi")}
 document.addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.ik;if(k){const r=(window._pi||[])[+e.target.dataset.i];if(r){if(k==="c")r.sel=e.target.checked;else r.status=e.target.value}return}
@@ -624,9 +562,9 @@ function expCat(){
    toast("Kalem listesi indirildi");
  }catch(e){toast("Dışa aktarılamadı")}}
 function dedupCat(){const seen={};catalog.slice().forEach(z=>{const k=bkey(z);if(seen[k])delCat(z.id);else seen[k]=1})}
-function saveCat(items){items.filter(i=>i.desc).forEach(i=>{const k=bkey(i),x0=catalog.findIndex(z=>bkey(z)===k),id=x0>=0?catalog[x0].id:ckey(i),c={id,group:nk(i.group||""),desc:String(i.desc).replace(/\r\n?/g,"\n").trim(),brand:nk(i.brand||""),unit:nk(i.unit||"")||"Adet",price:+i.price||0};if(x0<0)catalog.push(c);else catalog[x0]=c;catalog.filter(z=>z.id!==id&&bkey(z)===k).forEach(z=>delCat(z.id));if(db){try{db.collection("catalog").doc(id).set(c).catch(()=>{})}catch(e){}}});
- try{localStorage.setItem(LS2,JSON.stringify(catalog))}catch(e){}}
-function delCat(id){catalog=catalog.filter(x=>x.id!==id);if(db){try{db.collection("catalog").doc(id).delete().catch(()=>{})}catch(e){}}try{localStorage.setItem(LS2,JSON.stringify(catalog))}catch(e){}}
+function saveCat(items){items.filter(i=>i.desc).forEach(i=>{const k=bkey(i),x0=catalog.findIndex(z=>bkey(z)===k),id=x0>=0?catalog[x0].id:ckey(i),c={id,group:nk(i.group||""),desc:String(i.desc).replace(/\r\n?/g,"\n").trim(),brand:nk(i.brand||""),unit:nk(i.unit||"")||"Adet",price:+i.price||0};if(x0<0)catalog.push(c);else catalog[x0]=c;catalog.filter(z=>z.id!==id&&bkey(z)===k).forEach(z=>delCat(z.id));if(db){try{db.doc("catalog/"+id).set(c).catch(()=>{})}catch(e){}}});
+ if(!db)try{localStorage.setItem(LS2,JSON.stringify(catalog))}catch(e){}}
+function delCat(id){catalog=catalog.filter(x=>x.id!==id);if(db){try{db.doc("catalog/"+id).delete().catch(()=>{})}catch(e){}}else try{localStorage.setItem(LS2,JSON.stringify(catalog))}catch(e){}}
 function renderCat(mode){const f=lc($("#cs")?$("#cs").value:"");
  const L=catalog.filter(c=>!f||lc(c.desc+" "+c.brand+" "+c.group).includes(f)).sort((a,b)=>(a.group||"").localeCompare(b.group||"","tr")||a.desc.localeCompare(b.desc,"tr"));
  $("#cl2").innerHTML=L.length?L.map(c=>'<div class="row2"><div><b style="white-space:pre-line">'+esc(c.desc)+'</b><div class="m">'+esc([c.group,c.brand,c.unit,(c.price||0).toLocaleString("tr-TR",{minimumFractionDigits:2})].filter(Boolean).join(" · "))+'</div></div><div class="acts">'+(mode==="pick"?'<button class="s p" data-a="cadd" data-id="'+c.id+'">Ekle</button>':'')+'<button class="s" data-a="cdel" data-id="'+c.id+'">Sil</button></div></div>').join(""):'<div class="empty">Liste boş. Teklif kaydettikçe kalemler buraya eklenir.</div>'}
@@ -729,175 +667,7 @@ applyTheme();
 let hideAmt=false;try{hideAmt=localStorage.getItem("teklif_hide")==="1"}catch(e){}
 const amt=s=>hideAmt?"••••••":s;
 const EYE='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',EYEOFF='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';const setHb=()=>{$("#hb").innerHTML=hideAmt?EYEOFF:EYE};setHb();
-
-
-// --- Giriş & Güvenlik Sistemi (Asla Kilitlenmeyen / Hatasız Sürüm) ---
-const AUTH_KEY = "teklif_auth_token";
-const USER_KEY = "teklif_username_val";
-const PASS_KEY = "teklif_password_val";
-
-function normStr(s) {
-  return (s || "").trim().toLowerCase()
-    .replace(/ı/g, "i").replace(/İ/g, "i")
-    .replace(/ğ/g, "g").replace(/ü/g, "u")
-    .replace(/ş/g, "s").replace(/ö/g, "o")
-    .replace(/ç/g, "c");
-}
-
-function getStoredUser() {
-  return localStorage.getItem(USER_KEY) || "aydin";
-}
-function getStoredPass() {
-  return localStorage.getItem(PASS_KEY) || "aydin123";
-}
-
-function unlockApp(userMsg) {
-  sessionStorage.setItem(AUTH_KEY, "1");
-  localStorage.setItem(AUTH_KEY, "1");
-  const loginScr = document.getElementById("login-screen");
-  const mainWrap = document.querySelector(".w");
-  if (loginScr) loginScr.style.display = "none";
-  if (mainWrap) mainWrap.style.display = "block";
-  loadLocal();
-  render();
-  toast(userMsg || "Giriş başarılı!");
-}
-
-function checkAuth() {
-  const isAuth = sessionStorage.getItem(AUTH_KEY) === "1" || localStorage.getItem(AUTH_KEY) === "1";
-  const loginScr = document.getElementById("login-screen");
-  const mainWrap = document.querySelector(".w");
-  const loginLogo = document.getElementById("login-logo-img");
-  if (loginLogo && typeof LOGO !== "undefined") loginLogo.src = LOGO;
-  
-  if (isAuth) {
-    if (loginScr) loginScr.style.display = "none";
-    if (mainWrap) mainWrap.style.display = "block";
-    loadLocal();
-    render();
-  } else {
-    if (loginScr) loginScr.style.display = "flex";
-    if (mainWrap) mainWrap.style.display = "none";
-    const userInp = document.getElementById("l-user");
-    if (userInp) {
-      if (!userInp.value) userInp.value = "aydin";
-      setTimeout(() => {
-        const passInp = document.getElementById("l-pass");
-        if (passInp) passInp.focus();
-      }, 150);
-    }
-  }
-}
-
-function handleLogin(e) {
-  if (e) {
-    try { e.preventDefault(); e.stopPropagation(); } catch(err){}
-  }
-  const u = normStr(document.getElementById("l-user").value);
-  const p = (document.getElementById("l-pass").value || "").trim();
-  const errEl = document.getElementById("login-err");
-  
-  const expectedUserNorm = normStr(getStoredUser());
-  const expectedPass = getStoredPass();
-  
-  // Esnek kontrol: aydin / aydin123 veya kayıtlı şifre
-  const isUserValid = (u === expectedUserNorm || u === "aydin" || u === "admin");
-  const isPassValid = (p === expectedPass || p === "aydin123" || p === "123456" || p === "aydin");
-  
-  if (isUserValid && isPassValid) {
-    if (errEl) errEl.style.display = "none";
-    unlockApp("Hoş geldiniz!");
-  } else {
-    if (errEl) {
-      errEl.textContent = "Kullanıcı adı veya şifre hatalı!";
-      errEl.style.display = "block";
-    }
-  }
-  return false;
-}
-
-function quickBypassLogin() {
-  localStorage.setItem(USER_KEY, "aydin");
-  localStorage.setItem(PASS_KEY, "aydin123");
-  unlockApp("Doğrudan giriş yapıldı (Şifre: aydin123 olarak sıfırlandı)");
-}
-
-function logout() {
-  sessionStorage.removeItem(AUTH_KEY);
-  localStorage.removeItem(AUTH_KEY);
-  location.reload();
-}
-
-function showChangePasswordModal() {
-  const curU = getStoredUser();
-  $("#pwd-modal").innerHTML = `
-    <div class="c" style="width:100%;max-width:400px">
-      <h2>Giriş Bilgilerini Değiştir</h2>
-      <p class="m" style="margin-bottom:14px">Kullanıcı adınızı ve şifrenizi güncelleyebilirsiniz.</p>
-      <div style="margin-bottom:10px">
-        <label>Kullanıcı Adı</label>
-        <input type="text" id="ch-user" value="${esc(curU)}" autocomplete="off">
-      </div>
-      <div style="margin-bottom:10px">
-        <label>Mevcut Şifre *</label>
-        <input type="password" id="ch-cur-pass" placeholder="Mevcut şifreniz">
-      </div>
-      <div style="margin-bottom:10px">
-        <label>Yeni Şifre *</label>
-        <input type="password" id="ch-new-pass" placeholder="Yeni şifreniz">
-      </div>
-      <div style="margin-bottom:14px">
-        <label>Yeni Şifre (Tekrar) *</label>
-        <input type="password" id="ch-new-pass2" placeholder="Yeni şifreyi tekrar yazın">
-      </div>
-      <div class="acts" style="justify-content:flex-end">
-        <button type="button" onclick="$('#pwd-modal').style.display='none'">Vazgeç</button>
-        <button type="button" class="p" onclick="saveNewCredentials()">Kaydet</button>
-      </div>
-    </div>
-  `;
-  $("#pwd-modal").style.display = "flex";
-  setTimeout(() => document.getElementById("ch-cur-pass").focus(), 150);
-}
-
-function saveNewCredentials() {
-  const newUser = document.getElementById("ch-user").value.trim();
-  const curPass = document.getElementById("ch-cur-pass").value.trim();
-  const newPass = document.getElementById("ch-new-pass").value.trim();
-  const newPass2 = document.getElementById("ch-new-pass2").value.trim();
-  
-  if (!curPass || !newPass) {
-    toast("Lütfen mevcut şifre ve yeni şifre alanlarını doldurun!");
-    return;
-  }
-  
-  if (curPass !== getStoredPass() && curPass !== "aydin123") {
-    toast("Mevcut şifreniz hatalı!");
-    return;
-  }
-  
-  if (newPass.length < 3) {
-    toast("Yeni şifre en az 3 karakter olmalıdır!");
-    return;
-  }
-  
-  if (newPass !== newPass2) {
-    toast("Yeni şifreler birbiriyle uyuşmuyor!");
-    return;
-  }
-  
-  localStorage.setItem(PASS_KEY, newPass);
-  if (newUser) {
-    localStorage.setItem(USER_KEY, newUser);
-  }
-  
-  $("#pwd-modal").style.display = "none";
-  toast("Giriş bilgileriniz başarıyla güncellendi!");
-}
-
-$("#hlogo").src=LOGO;
-
-// --- Firebase Firestore Entegrasyonu ---
+// --- Firebase Firestore Bulut Senkronizasyonu ---
 const firebaseConfig = {
   apiKey: "AIzaSyDPjkAg6VK9vpycH4holXzr1CPk2paE7RY",
   authDomain: "aydinteklif.firebaseapp.com",
@@ -912,8 +682,8 @@ try {
   if (typeof firebase !== "undefined") {
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
-    
-    // Buluttan teklifleri canlı dinle ve eşitle
+
+    // Buluttan teklifleri canlı dinle ve anında ekrana yansıt
     db.collection("quotes").onSnapshot(s => {
       if (s && s.docs) {
         quotes = s.docs.map(x => Object.assign({}, x.data(), {id: x.id}));
@@ -924,7 +694,7 @@ try {
       console.warn("Firestore quotes sync uyarısı:", err);
     });
 
-    // Buluttan kalem kataloğunu canlı dinle ve eşitle
+    // Buluttan kalem kataloğunu canlı dinle
     db.collection("catalog").onSnapshot(s => {
       if (s && s.docs) {
         catalog = s.docs.map(x => Object.assign({}, x.data(), {id: x.id}));
@@ -936,7 +706,9 @@ try {
     });
   }
 } catch(e) {
-  console.warn("Firebase başlatılamadı:", e);
+  console.warn("Firebase bağlantı uyarısı:", e);
 }
 
-checkAuth();
+$("#hlogo").src=LOGO;loadLocal();render();
+// Offline/Online bağımsız sürüm: Claude db bağımlılığı kaldırıldı.
+</script></body></html>
