@@ -650,10 +650,42 @@ document.addEventListener("change", e => {
       } else if (quotes.length) {
         saveCat(quotes.flatMap(q => q.items || []));
       }
+
+      // Buluta (Firebase Firestore) toplu senkronize et
+      if (db) {
+        toast("Bulut veritabanına eşitleniyor…");
+        try {
+          const batch = db.batch();
+          if (loadedQuotes) {
+            loadedQuotes.forEach(q => {
+              if (!q.id) q.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+              batch.set(db.collection("quotes").doc(q.id), q);
+            });
+          }
+          if (catalog && catalog.length) {
+            catalog.forEach(c => {
+              if (!c.id) c.id = ckey(c);
+              batch.set(db.collection("catalog").doc(c.id), c);
+            });
+          }
+          batch.commit().then(() => {
+            toast("Yedek hem bu tarayıcıya hem buluta yüklendi (" + (loadedQuotes ? loadedQuotes.length : 0) + " teklif)!");
+          }).catch(err => {
+            console.error("Firestore batch commit hatası:", err);
+            // Teker teker yüklemeyi dene
+            if (loadedQuotes) {
+              loadedQuotes.forEach(q => db.collection("quotes").doc(q.id).set(q));
+            }
+          });
+        } catch(err) {
+          console.warn("Bulut batch hatası:", err);
+        }
+      } else {
+        toast("Yedek yerel olarak yüklendi (" + (loadedQuotes ? loadedQuotes.length : 0) + " teklif)!");
+      }
       
       render();
       fillPl();
-      toast("Yedek başarıyla geri yüklendi (" + (loadedQuotes ? loadedQuotes.length : 0) + " teklif)!");
       $("#bkm").style.display = "none";
     } catch(err) {
       toast("Geçersiz JSON dosyası: " + err.message);
@@ -686,9 +718,20 @@ try {
     // Buluttan teklifleri canlı dinle ve anında ekrana yansıt
     db.collection("quotes").onSnapshot(s => {
       if (s && s.docs) {
-        quotes = s.docs.map(x => Object.assign({}, x.data(), {id: x.id}));
-        saveLocal();
-        render();
+        if (s.docs.length > 0) {
+          quotes = s.docs.map(x => Object.assign({}, x.data(), {id: x.id}));
+          saveLocal();
+          render();
+        } else if (quotes.length > 0) {
+          // Bulut henüz boş ama bu tarayıcıda teklif var -> buluta otomatik yükle!
+          quotes.forEach(q => {
+            if (!q.id) q.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+            db.collection("quotes").doc(q.id).set(q);
+          });
+        } else {
+          quotes = [];
+          render();
+        }
       }
     }, err => {
       console.warn("Firestore quotes sync uyarısı:", err);
@@ -697,9 +740,17 @@ try {
     // Buluttan kalem kataloğunu canlı dinle
     db.collection("catalog").onSnapshot(s => {
       if (s && s.docs) {
-        catalog = s.docs.map(x => Object.assign({}, x.data(), {id: x.id}));
-        try { localStorage.setItem(LS2, JSON.stringify(catalog)); } catch(e) {}
-        fillPl();
+        if (s.docs.length > 0) {
+          catalog = s.docs.map(x => Object.assign({}, x.data(), {id: x.id}));
+          try { localStorage.setItem(LS2, JSON.stringify(catalog)); } catch(e) {}
+          fillPl();
+        } else if (catalog.length > 0) {
+          // Bulut boşsa yereldeki kataloğu buluta yükle
+          catalog.forEach(c => {
+            if (!c.id) c.id = ckey(c);
+            db.collection("catalog").doc(c.id).set(c);
+          });
+        }
       }
     }, err => {
       console.warn("Firestore catalog sync uyarısı:", err);
