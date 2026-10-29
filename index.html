@@ -789,6 +789,39 @@ try {
     }, err => {
       console.warn("Firestore catalog sync uyarısı:", err);
     });
+
+    // Buluttan giriş bilgilerini (kullanıcı adı ve şifre) canlı dinle ve tüm cihazlarla eşitle
+    db.collection("settings").doc("auth").onSnapshot(doc => {
+      if (doc && doc.exists) {
+        const d = doc.data();
+        if (d) {
+          if (d.user) localStorage.setItem("teklif_user_stored_v1", d.user);
+          if (d.pass) {
+            const currentStoredPass = localStorage.getItem("teklif_pass_stored_v1");
+            localStorage.setItem("teklif_pass_stored_v1", d.pass);
+            
+            // Eğer şifre başka bir cihazda değiştirildiyse ve oturum eski şifreyle açılmışsa, güvenli çıkış yapıp yeni şifreyi iste
+            const sessionPass = sessionStorage.getItem("teklif_session_pass_v1");
+            if (sessionPass && sessionPass !== d.pass) {
+              if (typeof doLogout === "function") {
+                doLogout("Şifreniz başka bir cihazda değiştirildi. Lütfen yeni şifrenizle giriş yapınız.");
+              }
+            }
+          }
+        }
+      } else {
+        // Bulutta henüz şifre belgesi yoksa varsayılanı (Aydın / aydin123) buluta kaydet
+        const initU = localStorage.getItem("teklif_user_stored_v1") || "Aydın";
+        const initP = localStorage.getItem("teklif_pass_stored_v1") || "aydin123";
+        db.collection("settings").doc("auth").set({
+          user: initU,
+          pass: initP,
+          updatedAt: new Date().toISOString()
+        }).catch(() => {});
+      }
+    }, err => {
+      console.warn("Firestore auth sync uyarısı:", err);
+    });
   }
 } catch(e) {
   console.warn("Firebase bağlantı uyarısı:", e);
@@ -803,15 +836,16 @@ $("#hlogo").src=LOGO;loadLocal();render();
   const AUTH_KEY = "teklif_auth_state_v1";
   const USER_STORE = "teklif_user_stored_v1";
   const PASS_STORE = "teklif_pass_stored_v1";
+  const SESSION_PASS_KEY = "teklif_session_pass_v1";
 
-  // Türkçe karakter duyarlı ve küçük/büyük harf uyumlu temizleme
+  // Türkçe karakter duyarlı ve küçük/büyük harf uyumlu temizleme (noktalı/noktasız harf ayrımı KESİNLİKLE korunur)
   function trNorm(s) {
     if (!s) return "";
-    return String(s).trim().toLocaleLowerCase("tr-TR").replace(/i̇/g, "i");
+    return String(s).trim().toLocaleLowerCase("tr-TR");
   }
 
   function getActiveUser() {
-    return localStorage.getItem(USER_STORE) || "aydın";
+    return localStorage.getItem(USER_STORE) || "Aydın";
   }
 
   function getActivePass() {
@@ -823,8 +857,11 @@ $("#hlogo").src=LOGO;loadLocal();render();
     const pwdInput = document.getElementById("login-pwd");
     const feedback = document.getElementById("login-feedback");
     
-    const u = trNorm(usrInput ? usrInput.value : "");
-    const p = (pwdInput ? pwdInput.value : "").trim();
+    const uRaw = usrInput ? usrInput.value : "";
+    const pRaw = pwdInput ? pwdInput.value : "";
+    
+    const u = trNorm(uRaw);
+    const p = String(pRaw || "").trim();
     
     if (!u || !p) {
       if (feedback) {
@@ -837,19 +874,25 @@ $("#hlogo").src=LOGO;loadLocal();render();
     const expectedU = trNorm(getActiveUser());
     const expectedP = getActivePass();
 
-    // Kullanıcı adı kontrolü: Türkçe karakter uyumlu (Aydın, aydın, AYDIN veya aydin)
-    const uOk = (u === expectedU || u === "aydın" || u === "aydin");
-    // Şifre kontrolü: Birebir eşleşme (gizli ve net)
+    // Türkçe karakter ayrımı: 'Aydın' ('ı') ile 'Aydin' ('i') BİREBİR AYRI algılanır!
+    // Sadece kayıtlı kullanıcı adıyla tam eşleştiğinde onay verilir.
+    const uOk = (u === expectedU);
+    // Şifre: Büyük/küçük harf duyarlı tam eşleşme
     const pOk = (p === expectedP);
 
     if (uOk && pOk) {
       if (feedback) feedback.style.display = "none";
       localStorage.setItem(AUTH_KEY, "logged_in");
+      sessionStorage.setItem(SESSION_PASS_KEY, expectedP);
       hideLoginOverlay();
       if (typeof toast === "function") toast("Giriş başarılı.");
     } else {
       if (feedback) {
-        feedback.textContent = "Kullanıcı adı veya şifre hatalı!";
+        if (!uOk && pOk) {
+          feedback.textContent = "Kullanıcı adı hatalı! (Türkçe karakterleri kontrol ediniz)";
+        } else {
+          feedback.textContent = "Kullanıcı adı veya şifre hatalı!";
+        }
         feedback.style.display = "block";
       }
       if (pwdInput) {
@@ -864,9 +907,14 @@ $("#hlogo").src=LOGO;loadLocal();render();
     if (overlay) overlay.style.display = "none";
   }
 
-  function showLoginOverlay() {
+  function showLoginOverlay(msg) {
     const overlay = document.getElementById("login-overlay");
     if (overlay) overlay.style.display = "flex";
+    const feedback = document.getElementById("login-feedback");
+    if (feedback && msg) {
+      feedback.textContent = msg;
+      feedback.style.display = "block";
+    }
     const usrInput = document.getElementById("login-usr");
     if (usrInput && !usrInput.value) {
       setTimeout(() => usrInput.focus(), 150);
@@ -876,12 +924,13 @@ $("#hlogo").src=LOGO;loadLocal();render();
     }
   }
 
-  window.doLogout = function() {
+  window.doLogout = function(reasonMsg) {
     localStorage.removeItem(AUTH_KEY);
-    showLoginOverlay();
+    sessionStorage.removeItem(SESSION_PASS_KEY);
+    showLoginOverlay(reasonMsg);
     const pwdInput = document.getElementById("login-pwd");
     if (pwdInput) pwdInput.value = "";
-    if (typeof toast === "function") toast("Güvenli çıkış yapıldı.");
+    if (typeof toast === "function" && !reasonMsg) toast("Güvenli çıkış yapıldı.");
   };
 
   window.openChangePasswordModal = function() {
@@ -891,9 +940,9 @@ $("#hlogo").src=LOGO;loadLocal();render();
     modal.innerHTML = `
       <div class="c" style="width:100%;max-width:380px">
         <h2>Giriş Bilgilerini Değiştir</h2>
-        <p class="m" style="margin-bottom:14px">Kullanıcı adınızı ve şifrenizi güncelleyebilirsiniz.</p>
+        <p class="m" style="margin-bottom:14px">Değiştirdiğinizde tüm cihaz ve tarayıcılarınızda anında geçerli olur.</p>
         <div style="margin-bottom:10px">
-          <label>Kullanıcı Adı</label>
+          <label>Kullanıcı Adı (Örn: Aydın)</label>
           <input type="text" id="cp-user" value="${curU}" autocomplete="off">
         </div>
         <div style="margin-bottom:10px">
@@ -910,7 +959,7 @@ $("#hlogo").src=LOGO;loadLocal();render();
         </div>
         <div class="acts" style="justify-content:flex-end">
           <button type="button" id="btn-cp-cancel">Vazgeç</button>
-          <button type="button" class="p" id="btn-cp-save">Kaydet</button>
+          <button type="button" class="p" id="btn-cp-save">Buluta Kaydet & Eşitle</button>
         </div>
       </div>
     `;
@@ -920,7 +969,7 @@ $("#hlogo").src=LOGO;loadLocal();render();
       modal.style.display = "none";
     };
     
-    document.getElementById("btn-cp-save").onclick = function() {
+    document.getElementById("btn-cp-save").onclick = async function() {
       const uVal = document.getElementById("cp-user").value.trim();
       const curP = document.getElementById("cp-cur-pass").value.trim();
       const newP = document.getElementById("cp-new-pass").value.trim();
@@ -943,18 +992,43 @@ $("#hlogo").src=LOGO;loadLocal();render();
         return;
       }
       
+      const targetUser = uVal || getActiveUser();
+
+      // Yerel hafızaya kaydet
       localStorage.setItem(PASS_STORE, newP);
-      if (uVal) localStorage.setItem(USER_STORE, uVal);
+      localStorage.setItem(USER_STORE, targetUser);
+      sessionStorage.setItem(SESSION_PASS_KEY, newP);
+
+      // Buluta (Firebase Firestore) kaydet -> Böylece TÜM tarayıcılarda anında değişir!
+      if (db) {
+        try {
+          await db.collection("settings").doc("auth").set({
+            user: targetUser,
+            pass: newP,
+            updatedAt: new Date().toISOString()
+          });
+        } catch(err) {
+          console.error("Bulut şifre senkronizasyon hatası:", err);
+          if (typeof toast === "function") toast("Şifre yerelde güncellendi ancak buluta yazılamadı: " + err.message);
+          return;
+        }
+      }
+      
       modal.style.display = "none";
-      if (typeof toast === "function") toast("Giriş bilgileriniz güncellendi!");
+      if (typeof toast === "function") toast("Şifreniz güncellendi ve tüm tarayıcılarla eşitlendi!");
     };
   };
 
   // Sayfa açıldığında giriş durumu
   function initAuth() {
     const isAuth = localStorage.getItem(AUTH_KEY) === "logged_in";
-    if (isAuth) {
+    const expectedP = getActivePass();
+    const sessionP = sessionStorage.getItem(SESSION_PASS_KEY);
+
+    // Eğer oturum açıksa ve şifre uzaktan değiştirilmemişse doğrudan aç
+    if (isAuth && (!sessionP || sessionP === expectedP)) {
       hideLoginOverlay();
+      if (!sessionP) sessionStorage.setItem(SESSION_PASS_KEY, expectedP);
     } else {
       showLoginOverlay();
     }
