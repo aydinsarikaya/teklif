@@ -932,6 +932,14 @@ function updateUserUI() {
   if (btnBkm) btnBkm.style.display = (cur.role === "admin") ? "inline-block" : "none";
 }
 
+// Timeout korumalı bulut çağrısı (ağ kilitlenmelerini engeller)
+function withTimeout(promise, ms = 2500) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error("Zaman aşımı")), ms))
+  ]);
+}
+
 // Buluttan kullanıcı listesini canlı dinle
 function syncUsersFromCloud() {
   if (typeof db !== "undefined" && db) {
@@ -941,17 +949,11 @@ function syncUsersFromCloud() {
         if (d && Array.isArray(d.list) && d.list.length > 0) {
           saveStoredUsers(d.list);
           const cur = getCurrentUser();
-          const match = d.list.find(x => x.username === cur.username);
+          const match = d.list.find(x => x.username.toLowerCase() === cur.username.toLowerCase());
           if (match) {
             setCurrentUser({ username: match.username, role: match.role, title: match.title });
           }
         }
-      } else {
-        // Bulutta henüz liste yoksa varsayılan Aydın admin kullanıcısını oluştur
-        db.collection("settings").doc("users").set({
-          list: DEFAULT_USERS,
-          updatedAt: new Date().toISOString()
-        }).catch(() => {});
       }
     }, err => console.warn("Kullanıcı senkronizasyon uyarısı:", err));
   }
@@ -980,18 +982,28 @@ async function performLogin() {
   }
 
   let users = getStoredUsers();
+  let cloudAuthPass = null;
 
-  // Doğrudan Firebase bulutundan en güncel kullanıcı listesini çek
+  // Buluttan en güncel kullanıcı listesi ve auth kayıtlarını kontrol et
   if (typeof db !== "undefined" && db) {
     try {
-      const snap = await db.collection("settings").doc("users").get();
-      if (snap && snap.exists && snap.data() && Array.isArray(snap.data().list)) {
-        users = snap.data().list;
+      const snapUsers = await withTimeout(db.collection("settings").doc("users").get(), 2500);
+      if (snapUsers && snapUsers.exists && snapUsers.data() && Array.isArray(snapUsers.data().list)) {
+        users = snapUsers.data().list;
         saveStoredUsers(users);
       }
     } catch(e) {
-      console.warn("Bulut kullanıcı kontrolü:", e);
+      console.warn("Bulut kullanıcı kontrolü zaman aşımı/uyarısı:", e);
     }
+
+    try {
+      // Telefonda veya önceki sürümlerde kaydedilmiş olabilecek 'settings/auth' dokümanını da kontrol et
+      const snapAuth = await withTimeout(db.collection("settings").doc("auth").get(), 2000);
+      if (snapAuth && snapAuth.exists && snapAuth.data()) {
+        const d = snapAuth.data();
+        if (d.pass) cloudAuthPass = d.pass;
+      }
+    } catch(e) {}
   }
 
   if (btnSubmit) {
@@ -999,26 +1011,58 @@ async function performLogin() {
     btnSubmit.textContent = "Giriş Yap";
   }
 
-  // Birebir eşleşme kontrolü (Büyük/küçük harf ve Türkçe karakter duyarlı)
-  const matchedUser = users.find(u => u.username === enteredUser && u.pass === enteredPass);
+  const legacyPass = localStorage.getItem("teklif_pass_stored_v1");
 
+  // Kullanıcı adı normalizasyonu (Aydın, aydın, Aydin, aydin, AYDIN vb. admin hesabını eşleştirir)
+  function isSameUser(a, b) {
+    if (!a || !b) return false;
+    if (a === b) return true;
+    const clean = s => s.toLowerCase().replace(/ı/g, "i").replace(/İ/g, "i");
+    return clean(a) === clean(b);
+  }
+
+  // Eşleşen kullanıcıyı bul
+  let matchedUser = users.find(u => isSameUser(u.username, enteredUser));
+
+  // Eğer kullanıcı 'Aydın' ise ve şifre;
+  // 1) Kullanıcı listesindeki şifreyle, VEYA
+  // 2) Telefonda değiştirilen bulut şifresiyle (settings/auth), VEYA
+  // 3) Yerel hafızadaki eski şifreyle, VEYA
+  // 4) Varsayılan 'aydin123' ile eşleşiyorsa KABUL ET!
+  let isPasswordValid = false;
   if (matchedUser) {
+    if (matchedUser.pass === enteredPass) {
+      isPasswordValid = true;
+    } else if (isSameUser(matchedUser.username, "Aydın")) {
+      if (enteredPass === cloudAuthPass || enteredPass === legacyPass || enteredPass === "aydin123") {
+        isPasswordValid = true;
+        // Şifreyi yeni şifre olarak otomatik senkronize et
+        matchedUser.pass = enteredPass;
+        saveStoredUsers(users);
+        if (typeof db !== "undefined" && db) {
+          db.collection("settings").doc("users").set({ list: users, updatedAt: new Date().toISOString() }).catch(() => {});
+          db.collection("settings").doc("auth").set({ user: "Aydın", pass: enteredPass, updatedAt: new Date().toISOString() }).catch(() => {});
+        }
+      }
+    }
+  }
+
+  if (matchedUser && isPasswordValid) {
     if (feedback) feedback.style.display = "none";
     localStorage.setItem(AUTH_KEY, "logged_in");
     setCurrentUser({
       username: matchedUser.username,
-      role: matchedUser.role || (matchedUser.username === "Aydın" ? "admin" : "user"),
+      role: matchedUser.role || (isSameUser(matchedUser.username, "Aydın") ? "admin" : "user"),
       title: matchedUser.title || (matchedUser.role === "admin" ? "Yönetici" : "Personel")
     });
     hideLoginOverlay();
-    if (typeof toast === "function") toast("Hoş geldiniz, " + matchedUser.username + " (" + (matchedUser.role === "admin" ? "Yönetici" : "Personel") + ")");
+    if (typeof toast === "function") toast("Hoş geldiniz, " + matchedUser.username);
   } else {
     if (feedback) {
-      const userExists = users.some(u => u.username === enteredUser);
-      if (userExists) {
-        feedback.textContent = "Şifre hatalı!";
+      if (!matchedUser) {
+        feedback.textContent = "Kullanıcı adı bulunamadı! Lütfen 'Aydın' yazınız.";
       } else {
-        feedback.textContent = "Kullanıcı adı bulunamadı! (Büyük/küçük harfe dikkat ediniz)";
+        feedback.textContent = "Şifre hatalı! Telefonda belirlediğiniz yeni şifreyi veya 'aydin123' şifresini deneyiniz.";
       }
       feedback.style.display = "block";
     }
@@ -1078,8 +1122,8 @@ function renderUsersModal() {
         <h3 style="font-size:14px;margin:0 0 10px">＋ Yeni Kullanıcı Ekle</h3>
         <div class="g" style="margin-bottom:8px">
           <div>
-            <label>Kullanıcı Adı (Birebir yazılacak)</label>
-            <input type="text" id="nu-user" placeholder="Örn: Mehmet" autocomplete="off">
+            <label>Kullanıcı Adı</label>
+            <input type="text" id="nu-user" placeholder="Örn: Ahmet" autocomplete="off">
           </div>
           <div>
             <label>Giriş Şifresi</label>
@@ -1107,7 +1151,7 @@ function renderUsersModal() {
               <div class="m">Şifre: <code>` + esc(u.pass) + `</code></div>
             </div>
             <div class="acts">
-              ` + (u.username === "Aydın" ? '<span class="m" style="font-size:11px;color:var(--ok)">Ana Yönetici</span>' : `
+              ` + (u.username.toLowerCase() === "aydın" || u.username.toLowerCase() === "aydin" ? '<span class="m" style="font-size:11px;color:var(--ok)">Ana Yönetici</span>' : `
                 <button type="button" class="s" onclick="changeUserPassPrompt(` + i + `)">Şifre Değiştir</button>
                 <button type="button" class="s" style="color:var(--bad)" onclick="deleteUserRow(` + i + `)">Sil</button>
               `) + `
@@ -1158,7 +1202,7 @@ function renderUsersModal() {
 window.deleteUserRow = async function(idx) {
   const list = getStoredUsers();
   const target = list[idx];
-  if (!target || target.username === "Aydın") {
+  if (!target || target.username.toLowerCase() === "aydın" || target.username.toLowerCase() === "aydin") {
     toast("Ana yönetici hesabı silinemez!");
     return;
   }
@@ -1192,6 +1236,14 @@ async function saveUsersToCloudAndLocal(list) {
         list: list,
         updatedAt: new Date().toISOString()
       });
+      const adminUser = list.find(x => x.username.toLowerCase() === "aydın" || x.username.toLowerCase() === "aydin");
+      if (adminUser) {
+        db.collection("settings").doc("auth").set({
+          user: adminUser.username,
+          pass: adminUser.pass,
+          updatedAt: new Date().toISOString()
+        }).catch(() => {});
+      }
     } catch(err) {
       console.error("Buluta kullanıcı kaydı hatası:", err);
       toast("Yerel kaydedildi fakat buluta yazılamadı: " + err.message);
@@ -1242,8 +1294,12 @@ window.openChangePasswordModal = function() {
       return;
     }
     const users = getStoredUsers();
-    const userObj = users.find(u => u.username === cur.username);
-    if (!userObj || userObj.pass !== curP) {
+    function isSameUser(a, b) {
+      return (a || "").toLowerCase().replace(/ı/g, "i") === (b || "").toLowerCase().replace(/ı/g, "i");
+    }
+    const userObj = users.find(u => isSameUser(u.username, cur.username));
+    
+    if (!userObj || (userObj.pass !== curP && curP !== "aydin123")) {
       toast("Mevcut şifreniz hatalı!");
       return;
     }
@@ -1259,7 +1315,7 @@ window.openChangePasswordModal = function() {
     userObj.pass = newP;
     await saveUsersToCloudAndLocal(users);
     modal.style.display = "none";
-    toast("Şifreniz başarıyla güncellendi!");
+    toast("Şifreniz başarıyla güncellendi ve tüm cihazlarla eşitlendi!");
   };
 };
 
