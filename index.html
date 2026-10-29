@@ -96,13 +96,13 @@ input,select,textarea{width:100%;font:inherit;padding:7px 9px;border:1px solid v
 <div id="pwd-change-modal" style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;z-index:90000"></div>
 
 <div class="w">
-<header><div style="display:flex;align-items:center;gap:12px"><img id="hlogo" alt="AYDN" style="width:52px;height:52px;display:block;flex:none"><div><div style="font-weight:700;font-size:15px;line-height:1.25">Aydın SARIKAYA Mühendislik Ltd. Şti.</div><h1 style="font-size:19px;margin-top:2px">Teklif Takip</h1></div></div><div><button data-a="thm" title="Tema" aria-label="Tema" style="padding:6px 9px;display:inline-flex;align-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.2 0-1.1.9-2 2-2H17a4 4 0 0 0 4-4c0-4.4-4-7.5-9-7.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/></svg></button> <button data-a="hide" id="hb" title="Tutarları gizle / göster" aria-label="Tutarları gizle / göster" style="padding:6px 9px;display:inline-flex;align-items:center"></button> <button data-a="backup" title="Verileri Yedekle / Geri Yükle">Yedekle / Yükle</button> <button data-a="chpwd" title="Şifre Değiştir">🔑 Şifre</button> <button data-a="logout" title="Çıkış Yap" style="color:var(--bad)">Çıkış</button> <button data-a="pdfi">PDF’den teklif ekle</button><input type="file" id="xp" accept="application/pdf,.pdf" multiple hidden> <button data-a="cat">Kalem listesi</button> <button class="p" data-a="new">+ Yeni teklif</button></div></header>
+<header><div style="display:flex;align-items:center;gap:12px"><img id="hlogo" alt="AYDN" style="width:52px;height:52px;display:block;flex:none"><div><div style="font-weight:700;font-size:15px;line-height:1.25">Aydın SARIKAYA Mühendislik Ltd. Şti.</div><h1 style="font-size:19px;margin-top:2px">Teklif Takip</h1></div></div><div><button data-a="thm" title="Tema" aria-label="Tema" style="padding:6px 9px;display:inline-flex;align-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.2 0-1.1.9-2 2-2H17a4 4 0 0 0 4-4c0-4.4-4-7.5-9-7.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/></svg></button> <button data-a="hide" id="hb" title="Tutarları gizle / göster" aria-label="Tutarları gizle / göster" style="padding:6px 9px;display:inline-flex;align-items:center"></button> <span id="u-badge" style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;background:var(--card);border:1px solid var(--bd);border-radius:8px;font-size:13px;font-weight:600;margin-right:2px">👤 <span id="u-name">Aydın</span> <span id="u-role" style="font-size:11px;padding:1px 6px;border-radius:99px;background:var(--okbg);color:var(--ok)">Yönetici</span></span> <button data-a="users" id="btn-u-mgmt" title="Kullanıcı Yönetimi" style="display:none;font-weight:600">👥 Kullanıcılar</button> <button data-a="backup" id="btn-bkm" title="Verileri Yedekle / Geri Yükle">Yedekle / Yükle</button> <button data-a="chpwd" title="Şifre Değiştir">🔑 Şifre</button> <button data-a="logout" title="Çıkış Yap" style="color:var(--bad)">Çıkış</button> <button data-a="pdfi">PDF’den teklif ekle</button><input type="file" id="xp" accept="application/pdf,.pdf" multiple hidden> <button data-a="cat">Kalem listesi</button> <button class="p" data-a="new">+ Yeni teklif</button></div></header>
 <div class="stats" id="stats"></div>
 <div id="due"></div>
 <div class="tabs" id="tabs"></div>
 <div class="c" style="padding:0" id="list"></div>
 </div>
-<div id="modal"></div><div id="doc"></div><div id="cat"></div><div id="imp"></div><div id="inq"></div><div id="thm"></div><div id="fu"></div><div id="bkm" style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;z-index:50"></div><div id="toast"></div><datalist id="gs"></datalist><datalist id="cu"></datalist><datalist id="pl"></datalist><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<div id="modal"></div><div id="doc"></div><div id="cat"></div><div id="imp"></div><div id="inq"></div><div id="thm"></div><div id="fu"></div><div id="usrm" style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;z-index:55"></div><div id="bkm" style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;z-index:50"></div><div id="toast"></div><datalist id="gs"></datalist><datalist id="cu"></datalist><datalist id="pl"></datalist><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <datalist id="ds"></datalist>
@@ -197,7 +197,7 @@ document.addEventListener("click",e=>{
  else if(a==="save")save();else if(a==="fu")showFu(id);else if(a==="fux")$("#fu").style.display="none";else if(a==="fuk"){window._fuk=id;[...$("#fu").querySelectorAll('[data-a="fuk"]')].forEach(x=>x.classList.toggle("sel2",x===b))}else if(a==="fusave")saveFu();else if(a==="fudel"){if(b.dataset.arm){delFu(+id)}else{b.dataset.arm="1";b.textContent="Emin misiniz? Sil";setTimeout(()=>{b.dataset.arm="";b.textContent="Sil"},3000)}}else if(a==="thm")showTheme();else if(a==="thmx")$("#thm").style.display="none";else if(a==="tmode"){themeMode=id;try{localStorage.setItem("teklif_mode",id)}catch(e){}applyTheme();showTheme()}else if(a==="tpal"){themePal=id;try{localStorage.setItem("teklif_pal",id)}catch(e){}applyTheme();showTheme()}else if(a==="hide"){hideAmt=!hideAmt;try{localStorage.setItem("teklif_hide",hideAmt?"1":"0")}catch(e){}setHb();render()}else if(a==="stat"){filter=id;render();$("#tabs").scrollIntoView({behavior:"smooth",block:"start"})}else if(a==="tab"){filter=id;render()}
  else if(a==="add"){$("#its").insertAdjacentHTML("beforeend",itemRow({group:([...document.querySelectorAll("#its .gp")].pop()||{}).value||"",desc:"",qty:1,price:0}))}
  else if(a==="rm"){const r=b.closest(".it");if(document.querySelectorAll("#its .it").length>1)r.remove();upd()}
- else if(a==="chpwd")openChangePasswordModal();else if(a==="logout")doLogout();else if(a==="backup")showBackup();else if(a==="bkx")$("#bkm").style.display="none";else if(a==="bkexp")exportDataJSON();else if(a==="bkimp")$("#bkfile").click();else if(a==="mailed")toast("Maili gönderdikten sonra “Takip yaptım”a basın");else if(a==="rowdel"){if(b.dataset.arm){removeQ(id);toast("Teklif silindi")}else{b.dataset.arm="1";b.textContent="Emin misiniz? Sil";setTimeout(()=>{b.dataset.arm="";b.textContent="Sil"},3000)}}else if(a==="doc"&&q)showDoc(q);else if(a==="cat")showCat("manage");else if(a==="catp")showCat("pick");else if(a==="inq"&&q)showInq(q);else if(a==="iqx")$("#inq").style.display="none";else if(a==="iqapp"){toast("Mail uygulaması açılıyor… açılmazsa kopyala düğmelerini kullanın");inqApp()}else if(a==="iqgm")inqGm();else if(a==="iqsh")inqShare();else if(a==="iqall")copy("Alıcı: "+$("#iq-to").value+"\nKonu: "+$("#iq-s").value+"\n\n"+$("#iq-b").value);else if(a==="iqc")copy($("#"+b.dataset.f).value);else if(a==="iqdone"&&q){$("#inq").style.display="none";const n=Object.assign({},q);n.log=(q.log||[]).concat(today());n.next=addDays(today(),q.follow||3);persist(n);toast("Sonraki takip: "+trDate(n.next))}else if(a==="pdfi")$("#xp").click();else if(a==="iclose"){window._pstop=true;$("#imp").style.display="none"}else if(a==="isave")saveImp();else if(a==="cimp")$("#xc").click();else if(a==="cexp")expCat();else if(a==="cclose")$("#cat").style.display="none";else if(a==="cadd"){const c=catalog.find(x=>x.id===id);if(c)applyImport([{group:c.group,desc:c.desc,brand:c.brand,unit:c.unit,qty:1,price:c.price}])}else if(a==="cdel"){delCat(id);renderCat(window._cm)}else if(a==="imp")$("#xf").click();else if(a==="tpl")tmplXlsx();else if(a==="clr"){$("#its").innerHTML=itemRow({unit:"Adet",desc:"",qty:1,price:0});upd()}else if(a==="pdf")savePdf(window._dq);else if(a==="print"){try{window.print()}catch(e){toast("Yazdırma bu ekranda kullanılamıyor")}}else if(a==="cdoc")$("#doc").style.display="none";else if(a==="qtxt"&&q)copy(quoteText(q));else if(a==="ftxt"&&q)copy(followText(q));
+ else if(a==="users")openUsersModal();else if(a==="usrx")$("#usrm").style.display="none";else if(a==="chpwd")openChangePasswordModal();else if(a==="logout")doLogout();else if(a==="backup")showBackup();else if(a==="bkx")$("#bkm").style.display="none";else if(a==="bkexp")exportDataJSON();else if(a==="bkimp")$("#bkfile").click();else if(a==="mailed")toast("Maili gönderdikten sonra “Takip yaptım”a basın");else if(a==="rowdel"){if(b.dataset.arm){removeQ(id);toast("Teklif silindi")}else{b.dataset.arm="1";b.textContent="Emin misiniz? Sil";setTimeout(()=>{b.dataset.arm="";b.textContent="Sil"},3000)}}else if(a==="doc"&&q)showDoc(q);else if(a==="cat")showCat("manage");else if(a==="catp")showCat("pick");else if(a==="inq"&&q)showInq(q);else if(a==="iqx")$("#inq").style.display="none";else if(a==="iqapp"){toast("Mail uygulaması açılıyor… açılmazsa kopyala düğmelerini kullanın");inqApp()}else if(a==="iqgm")inqGm();else if(a==="iqsh")inqShare();else if(a==="iqall")copy("Alıcı: "+$("#iq-to").value+"\nKonu: "+$("#iq-s").value+"\n\n"+$("#iq-b").value);else if(a==="iqc")copy($("#"+b.dataset.f).value);else if(a==="iqdone"&&q){$("#inq").style.display="none";const n=Object.assign({},q);n.log=(q.log||[]).concat(today());n.next=addDays(today(),q.follow||3);persist(n);toast("Sonraki takip: "+trDate(n.next))}else if(a==="pdfi")$("#xp").click();else if(a==="iclose"){window._pstop=true;$("#imp").style.display="none"}else if(a==="isave")saveImp();else if(a==="cimp")$("#xc").click();else if(a==="cexp")expCat();else if(a==="cclose")$("#cat").style.display="none";else if(a==="cadd"){const c=catalog.find(x=>x.id===id);if(c)applyImport([{group:c.group,desc:c.desc,brand:c.brand,unit:c.unit,qty:1,price:c.price}])}else if(a==="cdel"){delCat(id);renderCat(window._cm)}else if(a==="imp")$("#xf").click();else if(a==="tpl")tmplXlsx();else if(a==="clr"){$("#its").innerHTML=itemRow({unit:"Adet",desc:"",qty:1,price:0});upd()}else if(a==="pdf")savePdf(window._dq);else if(a==="print"){try{window.print()}catch(e){toast("Yazdırma bu ekranda kullanılamıyor")}}else if(a==="cdoc")$("#doc").style.display="none";else if(a==="qtxt"&&q)copy(quoteText(q));else if(a==="ftxt"&&q)copy(followText(q));
  else if(a==="done"&&q){const n=Object.assign({},q);n.log=(q.log||[]).concat(today());n.next=addDays(today(),q.follow||3);persist(n);toast("Sonraki takip: "+trDate(n.next))}
  else if(a==="del"&&q&&confirm("Bu teklif silinsin mi?")){removeQ(id);$("#modal").style.display="none"}
 });
@@ -871,277 +871,437 @@ $("#hlogo").src=LOGO;loadLocal();render();
 // Offline/Online bağımsız sürüm: Claude db bağımlılığı kaldırıldı.
 
 
-// --- GÜVENLİ GİRİŞ & ŞİFRE YÖNETİMİ ---
-(function() {
-  const AUTH_KEY = "teklif_auth_state_v1";
-  const USER_STORE = "teklif_user_stored_v1";
-  const PASS_STORE = "teklif_pass_stored_v1";
-  const SESSION_PASS_KEY = "teklif_session_pass_v1";
+// --- GÜVENLİ GİRİŞ & ÇOKLU KULLANICI YÖNETİMİ ---
+const USERS_STORE = "teklif_users_list_v2";
+const ACTIVE_USER_STORE = "teklif_active_user_v2";
+const AUTH_KEY = "teklif_auth_state_v1";
 
-  function getLocalUser() {
-    return localStorage.getItem(USER_STORE) || "Aydın";
+const DEFAULT_USERS = [
+  { username: "Aydın", pass: "aydin123", role: "admin", title: "Yönetici" }
+];
+
+function getStoredUsers() {
+  try {
+    const list = JSON.parse(localStorage.getItem(USERS_STORE));
+    if (Array.isArray(list) && list.length > 0) return list;
+  } catch(e) {}
+  return DEFAULT_USERS;
+}
+
+function saveStoredUsers(list) {
+  try {
+    localStorage.setItem(USERS_STORE, JSON.stringify(list));
+  } catch(e) {}
+}
+
+function getCurrentUser() {
+  try {
+    const u = JSON.parse(localStorage.getItem(ACTIVE_USER_STORE));
+    if (u && u.username) return u;
+  } catch(e) {}
+  return { username: "Aydın", role: "admin", title: "Yönetici" };
+}
+
+function setCurrentUser(u) {
+  localStorage.setItem(ACTIVE_USER_STORE, JSON.stringify(u));
+  updateUserUI();
+}
+
+function updateUserUI() {
+  const cur = getCurrentUser();
+  const nameEl = document.getElementById("u-name");
+  const roleEl = document.getElementById("u-role");
+  const btnUsers = document.getElementById("btn-u-mgmt");
+  const btnBkm = document.getElementById("btn-bkm");
+  
+  if (nameEl) nameEl.textContent = cur.username;
+  if (roleEl) {
+    if (cur.role === "admin") {
+      roleEl.textContent = "Yönetici";
+      roleEl.style.background = "var(--okbg, #e4f3ea)";
+      roleEl.style.color = "var(--ok, #1b7447)";
+    } else {
+      roleEl.textContent = "Personel";
+      roleEl.style.background = "var(--bluebg, #e6eef8)";
+      roleEl.style.color = "var(--blue, #2a5a99)";
+    }
   }
 
-  function getLocalPass() {
-    return localStorage.getItem(PASS_STORE) || "aydin123";
-  }
+  // Yalnızca Admin (Aydın) kullanıcı ekleyebilir/silebilir
+  if (btnUsers) btnUsers.style.display = (cur.role === "admin") ? "inline-block" : "none";
+  if (btnBkm) btnBkm.style.display = (cur.role === "admin") ? "inline-block" : "none";
+}
 
-  // Buluttan en güncel giriş bilgilerini çek ve yerel hafızayı güncelle
-  async function fetchCloudCredentials() {
-    if (typeof db !== "undefined" && db) {
-      try {
-        const snap = await db.collection("settings").doc("auth").get();
-        if (snap && snap.exists) {
-          const d = snap.data();
-          if (d) {
-            if (d.user) localStorage.setItem(USER_STORE, d.user);
-            if (d.pass) localStorage.setItem(PASS_STORE, d.pass);
-            return { user: d.user || getLocalUser(), pass: d.pass || getLocalPass() };
+// Buluttan kullanıcı listesini canlı dinle
+function syncUsersFromCloud() {
+  if (typeof db !== "undefined" && db) {
+    db.collection("settings").doc("users").onSnapshot(doc => {
+      if (doc && doc.exists) {
+        const d = doc.data();
+        if (d && Array.isArray(d.list) && d.list.length > 0) {
+          saveStoredUsers(d.list);
+          const cur = getCurrentUser();
+          const match = d.list.find(x => x.username === cur.username);
+          if (match) {
+            setCurrentUser({ username: match.username, role: match.role, title: match.title });
           }
         }
-      } catch (e) {
-        console.warn("Bulut kimlik doğrulama okuma uyarısı:", e);
+      } else {
+        // Bulutta henüz liste yoksa varsayılan Aydın admin kullanıcısını oluştur
+        db.collection("settings").doc("users").set({
+          list: DEFAULT_USERS,
+          updatedAt: new Date().toISOString()
+        }).catch(() => {});
       }
+    }, err => console.warn("Kullanıcı senkronizasyon uyarısı:", err));
+  }
+}
+
+async function performLogin() {
+  const usrInput = document.getElementById("login-usr");
+  const pwdInput = document.getElementById("login-pwd");
+  const feedback = document.getElementById("login-feedback");
+  const btnSubmit = document.getElementById("btn-login-submit");
+  
+  const enteredUser = (usrInput ? usrInput.value : "").trim();
+  const enteredPass = (pwdInput ? pwdInput.value : "").trim();
+  
+  if (!enteredUser || !enteredPass) {
+    if (feedback) {
+      feedback.textContent = "Lütfen kullanıcı adı ve şifrenizi girin!";
+      feedback.style.display = "block";
     }
-    return { user: getLocalUser(), pass: getLocalPass() };
+    return;
   }
 
-  async function performLogin() {
-    const usrInput = document.getElementById("login-usr");
-    const pwdInput = document.getElementById("login-pwd");
-    const feedback = document.getElementById("login-feedback");
-    const btnSubmit = document.getElementById("btn-login-submit");
-    
-    const enteredUser = (usrInput ? usrInput.value : "").trim();
-    const enteredPass = (pwdInput ? pwdInput.value : "").trim();
-    
-    if (!enteredUser || !enteredPass) {
-      if (feedback) {
-        feedback.textContent = "Lütfen kullanıcı adı ve şifrenizi girin!";
-        feedback.style.display = "block";
+  if (btnSubmit) {
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = "Doğrulanıyor...";
+  }
+
+  let users = getStoredUsers();
+
+  // Doğrudan Firebase bulutundan en güncel kullanıcı listesini çek
+  if (typeof db !== "undefined" && db) {
+    try {
+      const snap = await db.collection("settings").doc("users").get();
+      if (snap && snap.exists && snap.data() && Array.isArray(snap.data().list)) {
+        users = snap.data().list;
+        saveStoredUsers(users);
       }
+    } catch(e) {
+      console.warn("Bulut kullanıcı kontrolü:", e);
+    }
+  }
+
+  if (btnSubmit) {
+    btnSubmit.disabled = false;
+    btnSubmit.textContent = "Giriş Yap";
+  }
+
+  // Birebir eşleşme kontrolü (Büyük/küçük harf ve Türkçe karakter duyarlı)
+  const matchedUser = users.find(u => u.username === enteredUser && u.pass === enteredPass);
+
+  if (matchedUser) {
+    if (feedback) feedback.style.display = "none";
+    localStorage.setItem(AUTH_KEY, "logged_in");
+    setCurrentUser({
+      username: matchedUser.username,
+      role: matchedUser.role || (matchedUser.username === "Aydın" ? "admin" : "user"),
+      title: matchedUser.title || (matchedUser.role === "admin" ? "Yönetici" : "Personel")
+    });
+    hideLoginOverlay();
+    if (typeof toast === "function") toast("Hoş geldiniz, " + matchedUser.username + " (" + (matchedUser.role === "admin" ? "Yönetici" : "Personel") + ")");
+  } else {
+    if (feedback) {
+      const userExists = users.some(u => u.username === enteredUser);
+      if (userExists) {
+        feedback.textContent = "Şifre hatalı!";
+      } else {
+        feedback.textContent = "Kullanıcı adı bulunamadı! (Büyük/küçük harfe dikkat ediniz)";
+      }
+      feedback.style.display = "block";
+    }
+    if (pwdInput) {
+      pwdInput.value = "";
+      pwdInput.focus();
+    }
+  }
+}
+
+function hideLoginOverlay() {
+  const overlay = document.getElementById("login-overlay");
+  if (overlay) overlay.style.display = "none";
+}
+
+function showLoginOverlay(msg) {
+  const overlay = document.getElementById("login-overlay");
+  if (overlay) overlay.style.display = "flex";
+  const feedback = document.getElementById("login-feedback");
+  if (feedback && msg) {
+    feedback.textContent = msg;
+    feedback.style.display = "block";
+  }
+  const usrInput = document.getElementById("login-usr");
+  if (usrInput) setTimeout(() => usrInput.focus(), 150);
+}
+
+window.doLogout = function(msg) {
+  localStorage.removeItem(AUTH_KEY);
+  showLoginOverlay(msg);
+  const pwdInput = document.getElementById("login-pwd");
+  if (pwdInput) pwdInput.value = "";
+  if (typeof toast === "function" && !msg) toast("Güvenli çıkış yapıldı.");
+};
+
+// --- KULLANICI YÖNETİMİ MODALİ (SADECE ADMİN) ---
+window.openUsersModal = function() {
+  const cur = getCurrentUser();
+  if (cur.role !== "admin") {
+    toast("Kullanıcı yönetimi yetkisi yalnızca Aydın (Yönetici) hesabına aittir!");
+    return;
+  }
+  renderUsersModal();
+};
+
+function renderUsersModal() {
+  const users = getStoredUsers();
+  const m = document.getElementById("usrm");
+  if (!m) return;
+
+  m.innerHTML = `
+    <div class="c" style="width:100%;max-width:560px">
+      <h2>Kullanıcı Yönetimi ve Yetkilendirme</h2>
+      <p class="m" style="margin-bottom:14px">Sisteme yeni kullanıcı ekleyebilir, yetkisini belirleyebilir ve şifrelerini yönetebilirsiniz.</p>
+      
+      <div style="background:var(--bg);padding:12px;border:1px solid var(--bd);border-radius:8px;margin-bottom:16px">
+        <h3 style="font-size:14px;margin:0 0 10px">＋ Yeni Kullanıcı Ekle</h3>
+        <div class="g" style="margin-bottom:8px">
+          <div>
+            <label>Kullanıcı Adı (Birebir yazılacak)</label>
+            <input type="text" id="nu-user" placeholder="Örn: Mehmet" autocomplete="off">
+          </div>
+          <div>
+            <label>Giriş Şifresi</label>
+            <input type="text" id="nu-pass" placeholder="En az 4 karakter" autocomplete="off">
+          </div>
+          <div>
+            <label>Yetki / Rol</label>
+            <select id="nu-role">
+              <option value="user">Personel (Teklif Hazırlama)</option>
+              <option value="admin">Yönetici (Tam Yetkili)</option>
+            </select>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <button type="button" class="p s" id="btn-nu-add">Kullanıcıyı Kaydet</button>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;margin:0 0 8px">Mevcut Kullanıcılar (` + users.length + `)</h3>
+      <div id="u-list-rows" style="max-height:260px;overflow:auto">
+        ` + users.map((u, i) => `
+          <div class="row2" style="align-items:center">
+            <div>
+              <b>` + esc(u.username) + `</b> ` + (u.role === "admin" ? '<span class="b won" style="font-size:11px">Yönetici</span>' : '<span class="b sent" style="font-size:11px">Personel</span>') + `
+              <div class="m">Şifre: <code>` + esc(u.pass) + `</code></div>
+            </div>
+            <div class="acts">
+              ` + (u.username === "Aydın" ? '<span class="m" style="font-size:11px;color:var(--ok)">Ana Yönetici</span>' : `
+                <button type="button" class="s" onclick="changeUserPassPrompt(` + i + `)">Şifre Değiştir</button>
+                <button type="button" class="s" style="color:var(--bad)" onclick="deleteUserRow(` + i + `)">Sil</button>
+              `) + `
+            </div>
+          </div>
+        `).join("") + `
+      </div>
+
+      <div class="acts" style="justify-content:flex-end;margin-top:16px">
+        <button type="button" data-a="usrx">Kapat</button>
+      </div>
+    </div>
+  `;
+  m.style.display = "flex";
+
+  document.getElementById("btn-nu-add").onclick = async function() {
+    const un = document.getElementById("nu-user").value.trim();
+    const pw = document.getElementById("nu-pass").value.trim();
+    const ro = document.getElementById("nu-role").value;
+
+    if (!un || !pw) {
+      toast("Lütfen kullanıcı adı ve şifre alanlarını doldurun!");
+      return;
+    }
+    if (pw.length < 4) {
+      toast("Şifre en az 4 karakter olmalıdır!");
+      return;
+    }
+    const currentList = getStoredUsers();
+    if (currentList.some(x => x.username.toLowerCase() === un.toLowerCase())) {
+      toast("Bu kullanıcı adı zaten mevcut!");
       return;
     }
 
-    if (btnSubmit) {
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = "Doğrulanıyor...";
-    }
+    currentList.push({
+      username: un,
+      pass: pw,
+      role: ro,
+      title: ro === "admin" ? "Yönetici" : "Personel"
+    });
 
-    // Doğrudan Firebase bulutundan son şifreyi al
-    const creds = await fetchCloudCredentials();
-    const expectedU = creds.user;
-    const expectedP = creds.pass;
-
-    if (btnSubmit) {
-      btnSubmit.disabled = false;
-      btnSubmit.textContent = "Giriş Yap";
-    }
-
-    // KATI VE BİREBİR EŞLEŞME:
-    // Kullanıcı adı birebir aynı olmalıdır (Büyük/küçük harf ve Türkçe karakter BİREBİR AYNI olmalı: 'Aydın' ise sadece 'Aydın' kabul edilir).
-    const uOk = (enteredUser === expectedU);
-    // Şifre: Yalnızca belirlenmiş aktif şifre ile birebir eşleşmeli (arka kapı yok)
-    const pOk = (enteredPass === expectedP || enteredPass === getLocalPass());
-
-    if (uOk && pOk) {
-      if (feedback) feedback.style.display = "none";
-      localStorage.setItem(AUTH_KEY, "logged_in");
-      sessionStorage.setItem(SESSION_PASS_KEY, enteredPass);
-      hideLoginOverlay();
-      if (typeof toast === "function") toast("Giriş başarılı.");
-    } else {
-      if (feedback) {
-        if (!uOk && pOk) {
-          feedback.textContent = "Kullanıcı adı hatalı! (Büyük/küçük harfe ve Türkçe karaktere dikkat ediniz)";
-        } else {
-          feedback.textContent = "Kullanıcı adı veya şifre hatalı!";
-        }
-        feedback.style.display = "block";
-      }
-      if (pwdInput) {
-        pwdInput.value = "";
-        pwdInput.focus();
-      }
-    }
-  }
-
-  function hideLoginOverlay() {
-    const overlay = document.getElementById("login-overlay");
-    if (overlay) overlay.style.display = "none";
-  }
-
-  function showLoginOverlay(msg) {
-    const overlay = document.getElementById("login-overlay");
-    if (overlay) overlay.style.display = "flex";
-    const feedback = document.getElementById("login-feedback");
-    if (feedback && msg) {
-      feedback.textContent = msg;
-      feedback.style.display = "block";
-    }
-    const usrInput = document.getElementById("login-usr");
-    if (usrInput && !usrInput.value) {
-      setTimeout(() => usrInput.focus(), 150);
-    } else {
-      const pwdInput = document.getElementById("login-pwd");
-      if (pwdInput) setTimeout(() => pwdInput.focus(), 150);
-    }
-  }
-
-  window.doLogout = function(reasonMsg) {
-    localStorage.removeItem(AUTH_KEY);
-    sessionStorage.removeItem(SESSION_PASS_KEY);
-    showLoginOverlay(reasonMsg);
-    const pwdInput = document.getElementById("login-pwd");
-    if (pwdInput) pwdInput.value = "";
-    if (typeof toast === "function" && !reasonMsg) toast("Güvenli çıkış yapıldı.");
+    await saveUsersToCloudAndLocal(currentList);
+    toast("Kullanıcı eklendi: " + un);
+    renderUsersModal();
   };
+}
 
+window.deleteUserRow = async function(idx) {
+  const list = getStoredUsers();
+  const target = list[idx];
+  if (!target || target.username === "Aydın") {
+    toast("Ana yönetici hesabı silinemez!");
+    return;
+  }
+  if (!confirm(target.username + " kullanıcısını silmek istediğinize emin misiniz?")) return;
+  list.splice(idx, 1);
+  await saveUsersToCloudAndLocal(list);
+  toast("Kullanıcı silindi.");
+  renderUsersModal();
+};
 
+window.changeUserPassPrompt = async function(idx) {
+  const list = getStoredUsers();
+  const target = list[idx];
+  if (!target) return;
+  const newP = prompt(target.username + " kullanıcısı için yeni şifreyi giriniz:", target.pass);
+  if (!newP || newP.trim().length < 4) {
+    if (newP !== null) toast("Şifre en az 4 karakter olmalıdır!");
+    return;
+  }
+  target.pass = newP.trim();
+  await saveUsersToCloudAndLocal(list);
+  toast(target.username + " şifresi güncellendi.");
+  renderUsersModal();
+};
 
-  window.openChangePasswordModal = function() {
-    const curU = getLocalUser();
-    const modal = document.getElementById("pwd-change-modal");
-    if (!modal) return;
-    modal.innerHTML = `
-      <div class="c" style="width:100%;max-width:380px">
-        <h2>Giriş Bilgilerini Değiştir</h2>
-        <p class="m" style="margin-bottom:14px">Değiştirdiğinizde buluta kaydedilir ve tüm tarayıcılarda geçerli olur.</p>
-        <div style="margin-bottom:10px">
-          <label>Kullanıcı Adı (Büyük/küçük harfe duyarlıdır)</label>
-          <input type="text" id="cp-user" value="${curU}" autocomplete="off">
-        </div>
-        <div style="margin-bottom:10px">
-          <label>Mevcut Şifre *</label>
-          <input type="password" id="cp-cur-pass" placeholder="••••••••">
-        </div>
-        <div style="margin-bottom:10px">
-          <label>Yeni Şifre *</label>
-          <input type="password" id="cp-new-pass" placeholder="En az 4 karakter">
-        </div>
-        <div style="margin-bottom:14px">
-          <label>Yeni Şifre (Tekrar) *</label>
-          <input type="password" id="cp-new-pass2" placeholder="Yeni şifreyi tekrar yazın">
-        </div>
-        <div class="acts" style="justify-content:flex-end">
-          <button type="button" id="btn-cp-cancel">Vazgeç</button>
-          <button type="button" class="p" id="btn-cp-save">Buluta Kaydet & Eşitle</button>
-        </div>
+async function saveUsersToCloudAndLocal(list) {
+  saveStoredUsers(list);
+  if (typeof db !== "undefined" && db) {
+    try {
+      await db.collection("settings").doc("users").set({
+        list: list,
+        updatedAt: new Date().toISOString()
+      });
+    } catch(err) {
+      console.error("Buluta kullanıcı kaydı hatası:", err);
+      toast("Yerel kaydedildi fakat buluta yazılamadı: " + err.message);
+    }
+  }
+}
+
+// Kendi şifresini değiştirme (tüm kullanıcılar için)
+window.openChangePasswordModal = function() {
+  const cur = getCurrentUser();
+  const modal = document.getElementById("pwd-change-modal");
+  if (!modal) return;
+  modal.innerHTML = `
+    <div class="c" style="width:100%;max-width:380px">
+      <h2>Şifre Değiştir</h2>
+      <p class="m" style="margin-bottom:14px"><b>` + esc(cur.username) + `</b> hesabınızın şifresini güncelleyin.</p>
+      <div style="margin-bottom:10px">
+        <label>Mevcut Şifreniz *</label>
+        <input type="password" id="cp-cur-pass" placeholder="••••••••">
       </div>
-    `;
-    modal.style.display = "flex";
-    
-    document.getElementById("btn-cp-cancel").onclick = function() {
-      modal.style.display = "none";
-    };
-    
-    document.getElementById("btn-cp-save").onclick = async function() {
-      const uVal = document.getElementById("cp-user").value.trim();
-      const curP = document.getElementById("cp-cur-pass").value.trim();
-      const newP = document.getElementById("cp-new-pass").value.trim();
-      const newP2 = document.getElementById("cp-new-pass2").value.trim();
-      const btnSave = document.getElementById("btn-cp-save");
-      
-      if (!curP || !newP) {
-        if (typeof toast === "function") toast("Lütfen şifre alanlarını doldurun!");
-        return;
-      }
-
-      // Buluttan ve yerelden kontrol et
-      const creds = await fetchCloudCredentials();
-      const activeP = creds.pass;
-
-      if (curP !== activeP && curP !== getLocalPass()) {
-        if (typeof toast === "function") toast("Mevcut şifreniz hatalı!");
-        return;
-      }
-      if (newP.length < 4) {
-        if (typeof toast === "function") toast("Yeni şifre en az 4 karakter olmalıdır!");
-        return;
-      }
-      if (newP !== newP2) {
-        if (typeof toast === "function") toast("Yeni şifreler birbiriyle uyuşmuyor!");
-        return;
-      }
-      
-      const targetUser = uVal || getLocalUser();
-
-      if (btnSave) {
-        btnSave.disabled = true;
-        btnSave.textContent = "Buluta kaydediliyor...";
-      }
-
-      // Yerel hafızaya kaydet
-      localStorage.setItem(PASS_STORE, newP);
-      localStorage.setItem(USER_STORE, targetUser);
-      sessionStorage.setItem(SESSION_PASS_KEY, newP);
-
-      // Buluta (Firebase Firestore) kaydet
-      if (typeof db !== "undefined" && db) {
-        try {
-          await db.collection("settings").doc("auth").set({
-            user: targetUser,
-            pass: newP,
-            updatedAt: new Date().toISOString()
-          });
-        } catch(err) {
-          console.error("Bulut şifre senkronizasyon hatası:", err);
-          if (btnSave) {
-            btnSave.disabled = false;
-            btnSave.textContent = "Buluta Kaydet & Eşitle";
-          }
-          if (typeof toast === "function") toast("Şifre yerelde güncellendi ancak buluta yazılamadı: " + err.message);
-          return;
-        }
-      }
-      
-      modal.style.display = "none";
-      if (typeof toast === "function") toast("Şifreniz bulutta güncellendi ve tüm tarayıcılarda geçerli oldu!");
-    };
+      <div style="margin-bottom:10px">
+        <label>Yeni Şifre *</label>
+        <input type="password" id="cp-new-pass" placeholder="En az 4 karakter">
+      </div>
+      <div style="margin-bottom:14px">
+        <label>Yeni Şifre (Tekrar) *</label>
+        <input type="password" id="cp-new-pass2" placeholder="Yeni şifreyi tekrar yazın">
+      </div>
+      <div class="acts" style="justify-content:flex-end">
+        <button type="button" id="btn-cp-cancel">Vazgeç</button>
+        <button type="button" class="p" id="btn-cp-save">Şifremi Kaydet</button>
+      </div>
+    </div>
+  `;
+  modal.style.display = "flex";
+  
+  document.getElementById("btn-cp-cancel").onclick = function() {
+    modal.style.display = "none";
   };
-
-  // Sayfa açıldığında giriş durumu
-  async function initAuth() {
-    const isAuth = localStorage.getItem(AUTH_KEY) === "logged_in";
-    if (isAuth) {
-      hideLoginOverlay();
-    } else {
-      showLoginOverlay();
-    }
+  
+  document.getElementById("btn-cp-save").onclick = async function() {
+    const curP = document.getElementById("cp-cur-pass").value.trim();
+    const newP = document.getElementById("cp-new-pass").value.trim();
+    const newP2 = document.getElementById("cp-new-pass2").value.trim();
     
-    const btnSubmit = document.getElementById("btn-login-submit");
-    if (btnSubmit) {
-      btnSubmit.addEventListener("click", performLogin);
+    if (!curP || !newP) {
+      toast("Lütfen tüm alanları doldurun!");
+      return;
+    }
+    const users = getStoredUsers();
+    const userObj = users.find(u => u.username === cur.username);
+    if (!userObj || userObj.pass !== curP) {
+      toast("Mevcut şifreniz hatalı!");
+      return;
+    }
+    if (newP.length < 4) {
+      toast("Yeni şifre en az 4 karakter olmalıdır!");
+      return;
+    }
+    if (newP !== newP2) {
+      toast("Yeni şifreler birbiriyle uyuşmuyor!");
+      return;
     }
 
+    userObj.pass = newP;
+    await saveUsersToCloudAndLocal(users);
+    modal.style.display = "none";
+    toast("Şifreniz başarıyla güncellendi!");
+  };
+};
 
-    
-    const usrInput = document.getElementById("login-usr");
-    if (usrInput) {
-      usrInput.addEventListener("keydown", function(e) {
-        if (e.key === "Enter") {
-          const pwdInput = document.getElementById("login-pwd");
-          if (pwdInput) pwdInput.focus();
-        }
-      });
-    }
-
-    const pwdInput = document.getElementById("login-pwd");
-    if (pwdInput) {
-      pwdInput.addEventListener("keydown", function(e) {
-        if (e.key === "Enter") performLogin();
-      });
-    }
-
-    // Sayfa açılır açılmaz arka planda buluttaki son şifreyi sessizce çek
-    fetchCloudCredentials().catch(() => {});
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initAuth);
+function initAuth() {
+  const isAuth = localStorage.getItem(AUTH_KEY) === "logged_in";
+  if (isAuth) {
+    hideLoginOverlay();
+    updateUserUI();
   } else {
-    initAuth();
+    showLoginOverlay();
   }
+  
+  const btnSubmit = document.getElementById("btn-login-submit");
+  if (btnSubmit) {
+    btnSubmit.addEventListener("click", performLogin);
+  }
+  
+  const usrInput = document.getElementById("login-usr");
+  if (usrInput) {
+    usrInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        const pwdInput = document.getElementById("login-pwd");
+        if (pwdInput) pwdInput.focus();
+      }
+    });
+  }
+
+  const pwdInput = document.getElementById("login-pwd");
+  if (pwdInput) {
+    pwdInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") performLogin();
+    });
+  }
+
+  syncUsersFromCloud();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initAuth);
+} else {
+  initAuth();
+}
 })();
 
 </script></body></html>
