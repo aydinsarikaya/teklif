@@ -798,9 +798,9 @@ render();
 
 
 // --- KULLANICI YÖNETİMİ & GİRİŞ SİSTEMİ ---
-const USERS_STORE = "teklif_users_list_v3";
-const ACTIVE_USER_STORE = "teklif_active_user_v3";
-const AUTH_KEY = "teklif_auth_state_v3";
+const USERS_STORE = "teklif_users_list_v4";
+const ACTIVE_USER_STORE = "teklif_active_user_v4";
+const AUTH_KEY = "teklif_auth_state_v4";
 
 const DEFAULT_USERS = [
   { username: "aydin", pass: "1234", role: "admin", title: "Yönetici" }
@@ -855,25 +855,19 @@ function updateUserUI() {
     }
   }
 
+  // Yalnızca Admin (aydin) kullanıcı yönetimi ve yedekleme butonlarını görebilir
   if (btnUsers) btnUsers.style.display = (cur.role === "admin") ? "inline-block" : "none";
   if (btnBkm) btnBkm.style.display = (cur.role === "admin") ? "inline-block" : "none";
 }
 
-function cleanUser(s) {
-  return String(s || "").trim().toLowerCase().replace(/ı/g, "i").replace(/İ/g, "i");
-}
-
-function isSameUser(a, b) {
-  return cleanUser(a) === cleanUser(b);
-}
-
-function withTimeout(promise, ms = 2000) {
+function withTimeout(promise, ms = 2500) {
   return Promise.race([
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error("Zaman aşımı")), ms))
   ]);
 }
 
+// Buluttan kullanıcı listesini senkronize et
 function syncUsersFromCloud() {
   if (typeof db !== "undefined" && db) {
     db.collection("settings").doc("users").onSnapshot(doc => {
@@ -882,12 +876,13 @@ function syncUsersFromCloud() {
         if (d && Array.isArray(d.list) && d.list.length > 0) {
           saveStoredUsers(d.list);
           const cur = getCurrentUser();
-          const match = d.list.find(x => isSameUser(x.username, cur.username));
+          const match = d.list.find(x => x.username === cur.username);
           if (match) {
             setCurrentUser({ username: match.username, role: match.role, title: match.title });
           }
         }
       } else {
+        // Bulutta henüz liste yoksa aydin:1234 admin kullanıcısını oluştur
         db.collection("settings").doc("users").set({
           list: DEFAULT_USERS,
           updatedAt: new Date().toISOString()
@@ -921,14 +916,17 @@ async function performLogin() {
 
   let users = getStoredUsers();
 
+  // Giriş anında doğrudan Firebase'den en güncel kullanıcı listesini çek (Cross-browser sync)
   if (typeof db !== "undefined" && db) {
     try {
-      const snap = await withTimeout(db.collection("settings").doc("users").get(), 1800);
-      if (snap && snap.exists && snap.data() && Array.isArray(snap.data().list)) {
+      const snap = await withTimeout(db.collection("settings").doc("users").get(), 2500);
+      if (snap && snap.exists && snap.data() && Array.isArray(snap.data().list) && snap.data().list.length > 0) {
         users = snap.data().list;
         saveStoredUsers(users);
       }
-    } catch(e) {}
+    } catch(e) {
+      console.warn("Bulut kullanıcı kontrolü:", e);
+    }
   }
 
   if (btnSubmit) {
@@ -936,55 +934,45 @@ async function performLogin() {
     btnSubmit.textContent = "Giriş Yap";
   }
 
-  const isAdmin = isSameUser(enteredUser, "aydin") || cleanUser(enteredUser) === "admin";
-  let matchedUser = users.find(u => isSameUser(u.username, enteredUser));
-  let isPasswordValid = false;
+  // BİREBİR EŞLEŞME: Harf büyüklüğü ve Türkçe ı/i karakter ayrımı KATI olarak uygulanır!
+  const matchedUser = users.find(u => u.username === enteredUser);
 
-  if (isAdmin) {
-    const adminPassInList = matchedUser ? matchedUser.pass : "1234";
-    if (enteredPass === adminPassInList || enteredPass === "1234") {
-      isPasswordValid = true;
-      if (!matchedUser) {
-        matchedUser = { username: "aydin", pass: enteredPass, role: "admin", title: "Yönetici" };
-        users.push(matchedUser);
+  if (!matchedUser) {
+    if (feedback) {
+      // Eğer kullanıcı Aydın yazdıysa yardımcı ipucu ver
+      if (enteredUser.toLowerCase().replace(/ı/g, "i") === "aydin") {
+        feedback.textContent = "Kullanıcı adı bulunamadı! (Lütfen küçük harfle 'aydin' yazınız, 'ı' değil 'i' kullanınız)";
       } else {
-        matchedUser.pass = enteredPass;
+        feedback.textContent = "Kullanıcı adı bulunamadı!";
       }
-      saveStoredUsers(users);
-      if (typeof db !== "undefined" && db) {
-        db.collection("settings").doc("users").set({ list: users, updatedAt: new Date().toISOString() }).catch(() => {});
-      }
+      feedback.style.display = "block";
     }
-  } else if (matchedUser) {
-    if (matchedUser.pass === enteredPass) {
-      isPasswordValid = true;
-    }
+    return;
   }
 
-  if (isPasswordValid && matchedUser) {
-    if (feedback) feedback.style.display = "none";
-    try { localStorage.setItem(AUTH_KEY, "logged_in"); } catch(e) {}
-    setCurrentUser({
-      username: matchedUser.username,
-      role: matchedUser.role || (isAdmin ? "admin" : "user"),
-      title: matchedUser.title || (isAdmin ? "Yönetici" : "Personel")
-    });
-    hideLoginOverlay();
-    if (typeof toast === "function") toast("Hoş geldiniz, " + matchedUser.username);
-  } else {
+  // Şifre kontrolü: YALNIZCA en son güncel şifre geçerlidir! Eski şifre veya 1234 bypass KESİNLİKLE YOK!
+  if (matchedUser.pass !== enteredPass) {
     if (feedback) {
-      if (!isAdmin && !matchedUser) {
-        feedback.textContent = "Kullanıcı adı bulunamadı!";
-      } else {
-        feedback.textContent = "Şifre hatalı!";
-      }
+      feedback.textContent = "Şifre hatalı!";
       feedback.style.display = "block";
     }
     if (pwdInput) {
       pwdInput.value = "";
       pwdInput.focus();
     }
+    return;
   }
+
+  // Giriş Başarılı
+  if (feedback) feedback.style.display = "none";
+  try { localStorage.setItem(AUTH_KEY, "logged_in"); } catch(e) {}
+  setCurrentUser({
+    username: matchedUser.username,
+    role: matchedUser.role || (matchedUser.username === "aydin" ? "admin" : "user"),
+    title: matchedUser.title || (matchedUser.role === "admin" ? "Yönetici" : "Personel")
+  });
+  hideLoginOverlay();
+  if (typeof toast === "function") toast("Hoş geldiniz, " + matchedUser.username);
 }
 
 function hideLoginOverlay() {
@@ -1012,6 +1000,7 @@ window.doLogout = function(msg) {
   if (typeof toast === "function" && !msg) toast("Güvenli çıkış yapıldı.");
 };
 
+// --- KULLANICI YÖNETİMİ MODALİ (SADECE ADMİN) ---
 window.openUsersModal = function() {
   const cur = getCurrentUser();
   if (cur.role !== "admin") {
@@ -1035,7 +1024,7 @@ function renderUsersModal() {
         <h3 style="font-size:14px;margin:0 0 10px">＋ Yeni Kullanıcı Ekle</h3>
         <div class="g" style="margin-bottom:8px">
           <div>
-            <label>Kullanıcı Adı</label>
+            <label>Kullanıcı Adı (Büyük/küçük harf duyarlı)</label>
             <input type="text" id="nu-user" placeholder="Örn: ahmet" autocomplete="off">
           </div>
           <div>
@@ -1064,7 +1053,7 @@ function renderUsersModal() {
               <div class="m">Şifre: <code>` + esc(u.pass) + `</code></div>
             </div>
             <div class="acts">
-              ` + (isSameUser(u.username, "aydin") ? '<span class="m" style="font-size:11px;color:var(--ok)">Ana Yönetici</span>' : `
+              ` + (u.username === "aydin" ? '<span class="m" style="font-size:11px;color:var(--ok)">Ana Yönetici</span>' : `
                 <button type="button" class="s" onclick="changeUserPassPrompt(` + i + `)">Şifre Değiştir</button>
                 <button type="button" class="s" style="color:var(--bad)" onclick="deleteUserRow(` + i + `)">Sil</button>
               `) + `
@@ -1090,7 +1079,7 @@ function renderUsersModal() {
       return;
     }
     const currentList = getStoredUsers();
-    if (currentList.some(x => isSameUser(x.username, un))) {
+    if (currentList.some(x => x.username === un)) {
       toast("Bu kullanıcı adı zaten mevcut!");
       return;
     }
@@ -1111,7 +1100,7 @@ function renderUsersModal() {
 window.deleteUserRow = async function(idx) {
   const list = getStoredUsers();
   const target = list[idx];
-  if (!target || isSameUser(target.username, "aydin")) {
+  if (!target || target.username === "aydin") {
     toast("Ana yönetici hesabı silinemez!");
     return;
   }
@@ -1149,6 +1138,7 @@ async function saveUsersToCloudAndLocal(list) {
   }
 }
 
+// Kendi şifresini değiştirme (tüm kullanıcılar için)
 window.openChangePasswordModal = function() {
   const cur = getCurrentUser();
   const modal = document.getElementById("pwd-change-modal");
@@ -1191,9 +1181,9 @@ window.openChangePasswordModal = function() {
       return;
     }
     const users = getStoredUsers();
-    const userObj = users.find(u => isSameUser(u.username, cur.username));
+    const userObj = users.find(u => u.username === cur.username);
     
-    if (!userObj || (userObj.pass !== curP && curP !== "1234")) {
+    if (!userObj || userObj.pass !== curP) {
       toast("Mevcut şifreniz hatalı!");
       return;
     }
@@ -1205,7 +1195,7 @@ window.openChangePasswordModal = function() {
     userObj.pass = newP;
     await saveUsersToCloudAndLocal(users);
     modal.style.display = "none";
-    toast("Şifreniz başarıyla güncellendi!");
+    toast("Şifreniz başarıyla güncellendi ve buluta kaydedildi!");
   };
 };
 
