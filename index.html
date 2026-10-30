@@ -484,48 +484,127 @@ function parsePdfToQuoteObject(txt) {
 
   let endTblIdx = lines.length;
   for (let i = tableHdrIdx; i < lines.length; i++) {
-    if (/kdv hariç|ticari koşullar/i.test(lines[i])) {
+    if (/kdv hariç/i.test(lines[i])) {
       endTblIdx = i;
       break;
     }
   }
 
+  // --- AKILLI VE ÇOK SATIRLI TABLO AYRIŞTIRICI ---
+  const endPattern = /\b(Adet|Set|Mt|Metre|Kg|Paket|Ad\.?|Saat|G[üu]n|Ay|Adam\.G[üu]n)\b\s+(\d+(?:[.,]\d+)?)\s+[€$₺]?\s*([\d\s.,]+?)\s+[€$₺]?\s*([\d\s.,]+|Opsiyonel)\s*$/i;
+  const headerResidue = /^(birim fiyat|euro|tutar|tl|usd|miktar|açıklamalar|marka \/ model|marka\/model|birim|no)$/i;
+  const brandPattern = /\b(AYDN|Helvar\s+[A-Za-z0-9\-_./]+|TP\s*8\"|Lenovo|Base|LCNSNR\d+|[A-Z0-9\-_./]+)$/i;
+
+  function parseNumJs(v) {
+    if (typeof v === 'number') return v;
+    let s = String(v || '').replace(/[^\d,.-]/g, '');
+    if (!s) return 0;
+    if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+    else if (s.includes(',')) s = s.replace(',', '.');
+    return parseFloat(s) || 0;
+  }
+
+  function splitDescBrand(txt) {
+    txt = txt.trim();
+    const m = txt.match(brandPattern);
+    if (m && m.index > 0) {
+      const brand = m[1].trim();
+      const desc = txt.slice(0, m.index).trim();
+      return { desc: desc || brand, brand: brand };
+    }
+    return { desc: txt, brand: '' };
+  }
+
   const items = [];
-  let currentGroup = "";
-  const rowPattern = /^(\d+)\s+(.*?)\s+(Adet|Set|Mt|Metre|Kg|Paket|Ad\.?|Saat|G[üu]n|Ay)\s+(\d+(?:[.,]\d+)?)\s+[€$₺]?\s*([\d.,]+)\s+[€$₺]?\s*([\d.,]+|Opsiyonel)$/i;
+  let currentGroup = '';
+  let i = tableHdrIdx + 1;
 
-  for (let i = tableHdrIdx; i < endTblIdx; i++) {
-    const l = lines[i];
-    const m = l.match(rowPattern);
-    if (m) {
-      let descAndBrand = m[2].trim();
-      const unit = m[3].charAt(0).toUpperCase() + m[3].slice(1).toLowerCase();
-      const qty = parseFloat(m[4].replace(",", ".")) || 1;
-      const price = parseNum(m[5]);
-      const opt = /opsiyonel/i.test(m[6]);
+  while (i < endTblIdx) {
+    const rawLine = lines[i].trim();
+    if (!rawLine || headerResidue.test(rawLine)) {
+      i++;
+      continue;
+    }
 
-      let desc = descAndBrand;
-      let brand = "";
-      const bMatch = descAndBrand.match(/\b(AYDN|Helvar[A-Za-z0-9\-_./ ]*|[A-Z0-9\-_.]+)$/);
-      if (bMatch) {
-        brand = bMatch[1].trim();
-        desc = descAndBrand.slice(0, descAndBrand.lastIndexOf(bMatch[1])).trim() || descAndBrand;
-      }
+    const endMatch = rawLine.match(endPattern);
+    const numStartMatch = rawLine.match(/^(\d+)(?:\s+(.*))?$/);
 
+    if (endMatch) {
+      let beforeMatch = rawLine.slice(0, endMatch.index).trim();
+      const rowNumM = beforeMatch.match(/^(\d+)\s+(.*)$/);
+      let descBrandPart = rowNumM ? rowNumM[2].trim() : beforeMatch;
+
+      const unit = endMatch[1].trim();
+      const qty = parseFloat(endMatch[2].replace(',', '.')) || 0;
+      const price = parseNumJs(endMatch[3]);
+      const opt = /opsiyonel/i.test(endMatch[4]);
+
+      const sb = splitDescBrand(descBrandPart);
       items.push({
         group: currentGroup,
-        desc: desc,
-        brand: brand,
+        desc: sb.desc,
+        brand: sb.brand,
         unit: unit,
         qty: qty,
         price: price,
         opt: opt
       });
-    } else if (!/\d+[.,]\d+/.test(l) && l.length < 90 && !/^(No|Açıklamalar|Marka|Birim|Euro|Tutar)/i.test(l)) {
-      currentGroup = l;
-    } else if (items.length > 0) {
-      items[items.length - 1].desc += " " + l;
+      i++;
+    } else if (numStartMatch && numStartMatch[1].length <= 3 && (!numStartMatch[2] || !numStartMatch[2].match(endPattern))) {
+      // Çok satırlı kalem başlangıcı (örn: "4" veya "5")
+      const descParts = [];
+      if (numStartMatch[2]) descParts.push(numStartMatch[2].trim());
+
+      i++;
+      while (i < endTblIdx) {
+        const subLine = lines[i].trim();
+        if (!subLine || headerResidue.test(subLine)) {
+          i++;
+          continue;
+        }
+
+        const subEndMatch = subLine.match(endPattern);
+        if (subEndMatch) {
+          const beforeSub = subLine.slice(0, subEndMatch.index).trim();
+          if (beforeSub) descParts.push(beforeSub);
+
+          const unit = subEndMatch[1].trim();
+          const qty = parseFloat(subEndMatch[2].replace(',', '.')) || 0;
+          const price = parseNumJs(subEndMatch[3]);
+          const opt = /opsiyonel/i.test(subEndMatch[4]);
+
+          const fullDesc = descParts.join(' ').trim();
+          const sb = splitDescBrand(fullDesc);
+
+          items.push({
+            group: currentGroup,
+            desc: sb.desc,
+            brand: sb.brand,
+            unit: unit,
+            qty: qty,
+            price: price,
+            opt: opt
+          });
+          i++;
+          break;
+        } else {
+          descParts.push(subLine);
+          i++;
+        }
+      }
+    } else {
+      if (rawLine.length < 80 && !/\d+[.,]\d+/.test(rawLine)) {
+        currentGroup = rawLine;
+      }
+      i++;
     }
+  }
+
+  // Toplam tutar
+  let pdfTotal = 0;
+  const totMatch = txt.match(/KDV\s+Hariç\s+Genel\s+Toplam[^:]*:[€$₺]?\s*([\d\s.,]+)/i);
+  if (totMatch) {
+    pdfTotal = parseNumJs(totMatch[1]);
   }
 
   return {
@@ -546,7 +625,8 @@ function parsePdfToQuoteObject(txt) {
     gunfiyat: 800,
     signer: signer,
     terms: terms,
-    items: items
+    items: items,
+    _total: pdfTotal
   };
 }
 
