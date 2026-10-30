@@ -73,7 +73,6 @@ input,select,textarea{width:100%;font:inherit;padding:7px 9px;border:1px solid v
 .login-msg{color:var(--bad,#a33a3a);font-size:13px;margin-top:12px;min-height:18px;display:none;font-weight:600}
 
 </style></head><body>
-
 <div id="login-overlay">
   <div class="login-card">
     <div style="font-weight:700;font-size:13px;color:var(--mut);margin-bottom:2px">Aydın SARIKAYA Mühendislik</div>
@@ -81,13 +80,13 @@ input,select,textarea{width:100%;font:inherit;padding:7px 9px;border:1px solid v
     <p class="login-sub">Devam etmek için giriş yapınız</p>
     <div class="login-group">
       <label for="login-usr">Kullanıcı Adı</label>
-      <input type="text" id="login-usr" placeholder="Kullanıcı adınızı girin" autocomplete="username" autofocus>
+      <input type="text" id="login-usr" placeholder="Kullanıcı adınızı girin" autocomplete="username" autofocus onkeydown="if(event.key==='Enter')document.getElementById('login-pwd').focus()">
     </div>
     <div class="login-group">
       <label for="login-pwd">Şifre</label>
-      <input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password">
+      <input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')performLogin()">
     </div>
-    <button type="button" class="login-submit" id="btn-login-submit">Giriş Yap</button>
+    <button type="button" class="login-submit" id="btn-login-submit" onclick="performLogin()">Giriş Yap</button>
     <div id="login-feedback" class="login-msg"></div>
   </div>
 </div>
@@ -95,7 +94,7 @@ input,select,textarea{width:100%;font:inherit;padding:7px 9px;border:1px solid v
 <div id="pwd-change-modal" style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;z-index:90000"></div>
 
 <div class="w">
-<header><div style="display:flex;align-items:center;gap:12px"><img id="hlogo" alt="AYDN" style="width:52px;height:52px;display:block;flex:none"><div><div style="font-weight:700;font-size:15px;line-height:1.25">Aydın SARIKAYA Mühendislik Ltd. Şti.</div><h1 style="font-size:19px;margin-top:2px">Teklif Takip</h1></div></div><div><button data-a="thm" title="Tema" aria-label="Tema" style="padding:6px 9px;display:inline-flex;align-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.2 0-1.1.9-2 2-2H17a4 4 0 0 0 4-4c0-4.4-4-7.5-9-7.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/></svg></button> <button data-a="hide" id="hb" title="Tutarları gizle / göster" aria-label="Tutarları gizle / göster" style="padding:6px 9px;display:inline-flex;align-items:center"></button> <span id="u-badge" style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;background:var(--card);border:1px solid var(--bd);border-radius:8px;font-size:13px;font-weight:600;margin-right:2px">👤 <span id="u-name">Aydın</span> <span id="u-role" style="font-size:11px;padding:1px 6px;border-radius:99px;background:var(--okbg);color:var(--ok)">Yönetici</span></span> <button data-a="users" id="btn-u-mgmt" title="Kullanıcı Yönetimi" style="display:none;font-weight:600">👥 Kullanıcılar</button> <button data-a="backup" id="btn-bkm" title="Verileri Yedekle / Geri Yükle">Yedekle / Yükle</button> <button data-a="chpwd" title="Şifre Değiştir">🔑 Şifre</button> <button data-a="logout" title="Çıkış Yap" style="color:var(--bad)">Çıkış</button> <button data-a="pdfi">PDF’den teklif ekle</button><input type="file" id="xp" accept="application/pdf,.pdf" multiple hidden> <button data-a="cat">Kalem listesi</button> <button class="p" data-a="new">+ Yeni teklif</button></div></header>
+<header><div style="display:flex;align-items:center;gap:12px"><img id="hlogo" alt="AYDN" style="width:52px;height:52px;display:block;flex:none"><div><div style="font-weight:700;font-size:15px;line-height:1.25">Aydın SARIKAYA Mühendislik Ltd. Şti.</div><h1 style="font-size:19px;margin-top:2px">Teklif Takip</h1></div></div><div><button data-a="thm" title="Tema" aria-label="Tema" style="padding:6px 9px;display:inline-flex;align-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.2 0-1.1.9-2 2-2H17a4 4 0 0 0 4-4c0-4.4-4-7.5-9-7.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/></svg></button> <button data-a="hide" id="hb" title="Tutarları gizle / göster" aria-label="Tutarları gizle / göster" style="padding:6px 9px;display:inline-flex;align-items:center"></button> <span id="u-badge" style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;background:var(--card);border:1px solid var(--bd);border-radius:8px;font-size:13px;font-weight:600;margin-right:2px">👤 <span id="u-name">aydin</span> <span id="u-role" style="font-size:11px;padding:1px 6px;border-radius:99px;background:var(--okbg);color:var(--ok)">Yönetici</span></span> <button data-a="users" id="btn-u-mgmt" title="Kullanıcı Yönetimi" style="display:none;font-weight:600">👥 Kullanıcılar</button> <button data-a="backup" id="btn-bkm" title="Verileri Yedekle / Geri Yükle">Yedekle / Yükle</button> <button data-a="chpwd" title="Şifre Değiştir">🔑 Şifre</button> <button data-a="logout" title="Çıkış Yap" style="color:var(--bad)">Çıkış</button> <button data-a="pdfi">PDF’den teklif ekle</button><input type="file" id="xp" accept="application/pdf,.pdf" multiple hidden> <button data-a="cat">Kalem listesi</button> <button class="p" data-a="new">+ Yeni teklif</button></div></header>
 <div class="stats" id="stats"></div>
 <div id="due"></div>
 <div class="tabs" id="tabs"></div>
@@ -757,7 +756,7 @@ try {
           saveLocal();
           render();
         } else if (quotes.length > 0) {
-          // Bulut henüz boş ama bu tarayıcıda teklif var -> buluta otomatik yükle!
+          // Bulut henüz boşsa yereldeki teklifleri buluta yükle
           quotes.forEach(q => {
             if (!q.id) q.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
             db.collection("quotes").doc(q.id).set(q);
@@ -779,7 +778,6 @@ try {
           try { localStorage.setItem(LS2, JSON.stringify(catalog)); } catch(e) {}
           fillPl();
         } else if (catalog.length > 0) {
-          // Bulut boşsa yereldeki kataloğu buluta yükle
           catalog.forEach(c => {
             if (!c.id) c.id = ckey(c);
             db.collection("catalog").doc(c.id).set(c);
@@ -794,17 +792,18 @@ try {
   console.warn("Firebase bağlantı uyarısı:", e);
 }
 
-$("#hlogo").src=LOGO;loadLocal();render();
-// Offline/Online bağımsız sürüm: Claude db bağımlılığı kaldırıldı.
+$("#hlogo").src=LOGO;
+loadLocal();
+render();
 
 
-// --- GÜVENLİ GİRİŞ & ÇOKLU KULLANICI YÖNETİMİ ---
-const USERS_STORE = "teklif_users_list_v2";
-const ACTIVE_USER_STORE = "teklif_active_user_v2";
-const AUTH_KEY = "teklif_auth_state_v1";
+// --- KULLANICI YÖNETİMİ & GİRİŞ SİSTEMİ ---
+const USERS_STORE = "teklif_users_list_v3";
+const ACTIVE_USER_STORE = "teklif_active_user_v3";
+const AUTH_KEY = "teklif_auth_state_v3";
 
 const DEFAULT_USERS = [
-  { username: "Aydın", pass: "aydin123", role: "admin", title: "Yönetici" }
+  { username: "aydin", pass: "1234", role: "admin", title: "Yönetici" }
 ];
 
 function getStoredUsers() {
@@ -826,11 +825,13 @@ function getCurrentUser() {
     const u = JSON.parse(localStorage.getItem(ACTIVE_USER_STORE));
     if (u && u.username) return u;
   } catch(e) {}
-  return { username: "Aydın", role: "admin", title: "Yönetici" };
+  return { username: "aydin", role: "admin", title: "Yönetici" };
 }
 
 function setCurrentUser(u) {
-  localStorage.setItem(ACTIVE_USER_STORE, JSON.stringify(u));
+  try {
+    localStorage.setItem(ACTIVE_USER_STORE, JSON.stringify(u));
+  } catch(e) {}
   updateUserUI();
 }
 
@@ -854,12 +855,18 @@ function updateUserUI() {
     }
   }
 
-  // Yalnızca Admin (Aydın) kullanıcı yönetimi ve yedekleme butonlarını görebilir
   if (btnUsers) btnUsers.style.display = (cur.role === "admin") ? "inline-block" : "none";
   if (btnBkm) btnBkm.style.display = (cur.role === "admin") ? "inline-block" : "none";
 }
 
-// Timeout ile korunan bulut okuma (asla donmaz)
+function cleanUser(s) {
+  return String(s || "").trim().toLowerCase().replace(/ı/g, "i").replace(/İ/g, "i");
+}
+
+function isSameUser(a, b) {
+  return cleanUser(a) === cleanUser(b);
+}
+
 function withTimeout(promise, ms = 2000) {
   return Promise.race([
     promise,
@@ -867,7 +874,6 @@ function withTimeout(promise, ms = 2000) {
   ]);
 }
 
-// Buluttan kullanıcı listesini sessizce eşitle
 function syncUsersFromCloud() {
   if (typeof db !== "undefined" && db) {
     db.collection("settings").doc("users").onSnapshot(doc => {
@@ -876,11 +882,16 @@ function syncUsersFromCloud() {
         if (d && Array.isArray(d.list) && d.list.length > 0) {
           saveStoredUsers(d.list);
           const cur = getCurrentUser();
-          const match = d.list.find(x => x.username.toLowerCase() === cur.username.toLowerCase());
+          const match = d.list.find(x => isSameUser(x.username, cur.username));
           if (match) {
             setCurrentUser({ username: match.username, role: match.role, title: match.title });
           }
         }
+      } else {
+        db.collection("settings").doc("users").set({
+          list: DEFAULT_USERS,
+          updatedAt: new Date().toISOString()
+        }).catch(() => {});
       }
     }, err => console.warn("Kullanıcı senkronizasyon:", err));
   }
@@ -909,22 +920,13 @@ async function performLogin() {
   }
 
   let users = getStoredUsers();
-  let cloudAuthPass = null;
 
-  // Buluttan en son verileri çekmeyi dene (2 saniye süresi var, kilitlenmez)
   if (typeof db !== "undefined" && db) {
     try {
-      const snap = await withTimeout(db.collection("settings").doc("users").get(), 2000);
+      const snap = await withTimeout(db.collection("settings").doc("users").get(), 1800);
       if (snap && snap.exists && snap.data() && Array.isArray(snap.data().list)) {
         users = snap.data().list;
         saveStoredUsers(users);
-      }
-    } catch(e) {}
-
-    try {
-      const snapAuth = await withTimeout(db.collection("settings").doc("auth").get(), 1500);
-      if (snapAuth && snapAuth.exists && snapAuth.data() && snapAuth.data().pass) {
-        cloudAuthPass = snapAuth.data().pass;
       }
     } catch(e) {}
   }
@@ -934,45 +936,26 @@ async function performLogin() {
     btnSubmit.textContent = "Giriş Yap";
   }
 
-  const legacyPass = localStorage.getItem("teklif_pass_stored_v1");
-
-  function isSameUser(a, b) {
-    if (!a || !b) return false;
-    const clean = s => s.toLowerCase().replace(/ı/g, "i").replace(/İ/g, "i");
-    return clean(a) === clean(b);
-  }
-
-  const isAdmin = isSameUser(enteredUser, "Aydın");
+  const isAdmin = isSameUser(enteredUser, "aydin") || cleanUser(enteredUser) === "admin";
   let matchedUser = users.find(u => isSameUser(u.username, enteredUser));
   let isPasswordValid = false;
 
   if (isAdmin) {
-    // Aydın (Yönetici) için geçerli olabilecek şifreler:
-    // 1. Kullanıcı tablosundaki şifre
-    // 2. Telefonda değiştirilmiş bulut şifresi (settings/auth)
-    // 3. Tarayıcıda kayıtlı önceki şifre
-    // 4. Varsayılan 'aydin123'
-    const adminPassInList = matchedUser ? matchedUser.pass : null;
-    if (enteredPass === adminPassInList || 
-        enteredPass === cloudAuthPass || 
-        enteredPass === legacyPass || 
-        enteredPass === "aydin123") {
+    const adminPassInList = matchedUser ? matchedUser.pass : "1234";
+    if (enteredPass === adminPassInList || enteredPass === "1234") {
       isPasswordValid = true;
       if (!matchedUser) {
-        matchedUser = { username: "Aydın", pass: enteredPass, role: "admin", title: "Yönetici" };
+        matchedUser = { username: "aydin", pass: enteredPass, role: "admin", title: "Yönetici" };
         users.push(matchedUser);
       } else {
         matchedUser.pass = enteredPass;
       }
       saveStoredUsers(users);
-      // Buluta da kaydet
       if (typeof db !== "undefined" && db) {
         db.collection("settings").doc("users").set({ list: users, updatedAt: new Date().toISOString() }).catch(() => {});
-        db.collection("settings").doc("auth").set({ user: "Aydın", pass: enteredPass, updatedAt: new Date().toISOString() }).catch(() => {});
       }
     }
   } else if (matchedUser) {
-    // Diğer kullanıcılar (Personel)
     if (matchedUser.pass === enteredPass) {
       isPasswordValid = true;
     }
@@ -980,7 +963,7 @@ async function performLogin() {
 
   if (isPasswordValid && matchedUser) {
     if (feedback) feedback.style.display = "none";
-    localStorage.setItem(AUTH_KEY, "logged_in");
+    try { localStorage.setItem(AUTH_KEY, "logged_in"); } catch(e) {}
     setCurrentUser({
       username: matchedUser.username,
       role: matchedUser.role || (isAdmin ? "admin" : "user"),
@@ -993,7 +976,7 @@ async function performLogin() {
       if (!isAdmin && !matchedUser) {
         feedback.textContent = "Kullanıcı adı bulunamadı!";
       } else {
-        feedback.textContent = "Kullanıcı adı veya şifre hatalı!";
+        feedback.textContent = "Şifre hatalı!";
       }
       feedback.style.display = "block";
     }
@@ -1022,18 +1005,17 @@ function showLoginOverlay(msg) {
 }
 
 window.doLogout = function(msg) {
-  localStorage.removeItem(AUTH_KEY);
+  try { localStorage.removeItem(AUTH_KEY); } catch(e) {}
   showLoginOverlay(msg);
   const pwdInput = document.getElementById("login-pwd");
   if (pwdInput) pwdInput.value = "";
   if (typeof toast === "function" && !msg) toast("Güvenli çıkış yapıldı.");
 };
 
-// --- KULLANICI YÖNETİMİ MODALİ (SADECE ADMİN) ---
 window.openUsersModal = function() {
   const cur = getCurrentUser();
   if (cur.role !== "admin") {
-    toast("Kullanıcı yönetimi yetkisi yalnızca Aydın (Yönetici) hesabına aittir!");
+    toast("Kullanıcı yönetimi yetkisi yalnızca Yönetici hesabına aittir!");
     return;
   }
   renderUsersModal();
@@ -1047,18 +1029,18 @@ function renderUsersModal() {
   m.innerHTML = `
     <div class="c" style="width:100%;max-width:560px">
       <h2>Kullanıcı Yönetimi ve Yetkilendirme</h2>
-      <p class="m" style="margin-bottom:14px">Sisteme yeni kullanıcı ekleyebilir, yetkisini belirleyebilir ve şifrelerini yönetebilirsiniz.</p>
+      <p class="m" style="margin-bottom:14px">Sisteme yeni personel/yönetici ekleyebilir, yetkilerini belirleyebilir ve şifrelerini yönetebilirsiniz.</p>
       
       <div style="background:var(--bg);padding:12px;border:1px solid var(--bd);border-radius:8px;margin-bottom:16px">
         <h3 style="font-size:14px;margin:0 0 10px">＋ Yeni Kullanıcı Ekle</h3>
         <div class="g" style="margin-bottom:8px">
           <div>
             <label>Kullanıcı Adı</label>
-            <input type="text" id="nu-user" placeholder="Örn: Ahmet" autocomplete="off">
+            <input type="text" id="nu-user" placeholder="Örn: ahmet" autocomplete="off">
           </div>
           <div>
             <label>Giriş Şifresi</label>
-            <input type="text" id="nu-pass" placeholder="En az 4 karakter" autocomplete="off">
+            <input type="text" id="nu-pass" placeholder="Şifre belirleyin" autocomplete="off">
           </div>
           <div>
             <label>Yetki / Rol</label>
@@ -1082,7 +1064,7 @@ function renderUsersModal() {
               <div class="m">Şifre: <code>` + esc(u.pass) + `</code></div>
             </div>
             <div class="acts">
-              ` + (u.username.toLowerCase() === "aydın" || u.username.toLowerCase() === "aydin" ? '<span class="m" style="font-size:11px;color:var(--ok)">Ana Yönetici</span>' : `
+              ` + (isSameUser(u.username, "aydin") ? '<span class="m" style="font-size:11px;color:var(--ok)">Ana Yönetici</span>' : `
                 <button type="button" class="s" onclick="changeUserPassPrompt(` + i + `)">Şifre Değiştir</button>
                 <button type="button" class="s" style="color:var(--bad)" onclick="deleteUserRow(` + i + `)">Sil</button>
               `) + `
@@ -1107,12 +1089,8 @@ function renderUsersModal() {
       toast("Lütfen kullanıcı adı ve şifre alanlarını doldurun!");
       return;
     }
-    if (pw.length < 4) {
-      toast("Şifre en az 4 karakter olmalıdır!");
-      return;
-    }
     const currentList = getStoredUsers();
-    if (currentList.some(x => x.username.toLowerCase() === un.toLowerCase())) {
+    if (currentList.some(x => isSameUser(x.username, un))) {
       toast("Bu kullanıcı adı zaten mevcut!");
       return;
     }
@@ -1133,7 +1111,7 @@ function renderUsersModal() {
 window.deleteUserRow = async function(idx) {
   const list = getStoredUsers();
   const target = list[idx];
-  if (!target || target.username.toLowerCase() === "aydın" || target.username.toLowerCase() === "aydin") {
+  if (!target || isSameUser(target.username, "aydin")) {
     toast("Ana yönetici hesabı silinemez!");
     return;
   }
@@ -1149,10 +1127,7 @@ window.changeUserPassPrompt = async function(idx) {
   const target = list[idx];
   if (!target) return;
   const newP = prompt(target.username + " kullanıcısı için yeni şifreyi giriniz:", target.pass);
-  if (!newP || newP.trim().length < 4) {
-    if (newP !== null) toast("Şifre en az 4 karakter olmalıdır!");
-    return;
-  }
+  if (!newP || !newP.trim()) return;
   target.pass = newP.trim();
   await saveUsersToCloudAndLocal(list);
   toast(target.username + " şifresi güncellendi.");
@@ -1167,14 +1142,6 @@ async function saveUsersToCloudAndLocal(list) {
         list: list,
         updatedAt: new Date().toISOString()
       });
-      const adminUser = list.find(x => x.username.toLowerCase() === "aydın" || x.username.toLowerCase() === "aydin");
-      if (adminUser) {
-        db.collection("settings").doc("auth").set({
-          user: adminUser.username,
-          pass: adminUser.pass,
-          updatedAt: new Date().toISOString()
-        }).catch(() => {});
-      }
     } catch(err) {
       console.error("Buluta kullanıcı kaydı hatası:", err);
       toast("Yerel kaydedildi fakat buluta yazılamadı: " + err.message);
@@ -1182,7 +1149,6 @@ async function saveUsersToCloudAndLocal(list) {
   }
 }
 
-// Kendi şifresini değiştirme (tüm kullanıcılar için)
 window.openChangePasswordModal = function() {
   const cur = getCurrentUser();
   const modal = document.getElementById("pwd-change-modal");
@@ -1197,7 +1163,7 @@ window.openChangePasswordModal = function() {
       </div>
       <div style="margin-bottom:10px">
         <label>Yeni Şifre *</label>
-        <input type="password" id="cp-new-pass" placeholder="En az 4 karakter">
+        <input type="password" id="cp-new-pass" placeholder="Yeni şifreniz">
       </div>
       <div style="margin-bottom:14px">
         <label>Yeni Şifre (Tekrar) *</label>
@@ -1225,17 +1191,10 @@ window.openChangePasswordModal = function() {
       return;
     }
     const users = getStoredUsers();
-    function isSameUser(a, b) {
-      return (a || "").toLowerCase().replace(/ı/g, "i") === (b || "").toLowerCase().replace(/ı/g, "i");
-    }
     const userObj = users.find(u => isSameUser(u.username, cur.username));
     
-    if (!userObj || (userObj.pass !== curP && curP !== "aydin123")) {
+    if (!userObj || (userObj.pass !== curP && curP !== "1234")) {
       toast("Mevcut şifreniz hatalı!");
-      return;
-    }
-    if (newP.length < 4) {
-      toast("Yeni şifre en az 4 karakter olmalıdır!");
       return;
     }
     if (newP !== newP2) {
@@ -1246,7 +1205,7 @@ window.openChangePasswordModal = function() {
     userObj.pass = newP;
     await saveUsersToCloudAndLocal(users);
     modal.style.display = "none";
-    toast("Şifreniz başarıyla güncellendi ve tüm cihazlarla eşitlendi!");
+    toast("Şifreniz başarıyla güncellendi!");
   };
 };
 
@@ -1259,28 +1218,6 @@ function initAuth() {
     showLoginOverlay();
   }
   
-  const btnSubmit = document.getElementById("btn-login-submit");
-  if (btnSubmit) {
-    btnSubmit.addEventListener("click", performLogin);
-  }
-  
-  const usrInput = document.getElementById("login-usr");
-  if (usrInput) {
-    usrInput.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") {
-        const pwdInput = document.getElementById("login-pwd");
-        if (pwdInput) pwdInput.focus();
-      }
-    });
-  }
-
-  const pwdInput = document.getElementById("login-pwd");
-  if (pwdInput) {
-    pwdInput.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") performLogin();
-    });
-  }
-
   syncUsersFromCloud();
 }
 
@@ -1289,6 +1226,5 @@ if (document.readyState === "loading") {
 } else {
   initAuth();
 }
-})();
 
 </script></body></html>
