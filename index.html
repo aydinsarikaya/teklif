@@ -885,6 +885,22 @@ render();
 const USERS_STORE = "teklif_users_list_v4";
 const ACTIVE_USER_STORE = "teklif_active_user_v4";
 const AUTH_KEY = "teklif_auth_state_v4";
+const LAST_ACTIVE_KEY = "teklif_last_active_v4";
+const SESSION_TIMEOUT_MS = 2 * 60 * 60 * 1000; // 2 Saat (Hareketsizlik sonrası otomatik oturum kapatma)
+
+function updateActivity() {
+  try { localStorage.setItem(LAST_ACTIVE_KEY, String(Date.now())); } catch(e) {}
+}
+
+function checkSessionTimeout() {
+  const isAuth = localStorage.getItem(AUTH_KEY) === "logged_in";
+  if (!isAuth) return;
+  const lastActive = parseInt(localStorage.getItem(LAST_ACTIVE_KEY) || "0", 10);
+  if (!lastActive || (Date.now() - lastActive > SESSION_TIMEOUT_MS)) {
+    doLogout("Oturum süreniz doldu. Güvenliğiniz için lütfen tekrar giriş yapın.");
+  }
+}
+
 
 const DEFAULT_USERS = [
   { username: "aydin", pass: "1234", role: "admin", title: "Yönetici" }
@@ -1049,7 +1065,7 @@ async function performLogin() {
 
   // Giriş Başarılı
   if (feedback) feedback.style.display = "none";
-  try { localStorage.setItem(AUTH_KEY, "logged_in"); } catch(e) {}
+  try { localStorage.setItem(AUTH_KEY, "logged_in"); updateActivity(); } catch(e) {}
   setCurrentUser({
     username: matchedUser.username,
     role: matchedUser.role || (matchedUser.username === "aydin" ? "admin" : "user"),
@@ -1077,7 +1093,7 @@ function showLoginOverlay(msg) {
 }
 
 window.doLogout = function(msg) {
-  try { localStorage.removeItem(AUTH_KEY); } catch(e) {}
+  try { localStorage.removeItem(AUTH_KEY); localStorage.removeItem(LAST_ACTIVE_KEY); } catch(e) {}
   showLoginOverlay(msg);
   const pwdInput = document.getElementById("login-pwd");
   if (pwdInput) pwdInput.value = "";
@@ -1285,14 +1301,39 @@ window.openChangePasswordModal = function() {
 
 function initAuth() {
   const isAuth = localStorage.getItem(AUTH_KEY) === "logged_in";
-  if (isAuth) {
+  const lastActive = parseInt(localStorage.getItem(LAST_ACTIVE_KEY) || "0", 10);
+
+  if (isAuth && lastActive && (Date.now() - lastActive <= SESSION_TIMEOUT_MS)) {
+    updateActivity();
     hideLoginOverlay();
     updateUserUI();
   } else {
-    showLoginOverlay();
+    if (isAuth) {
+      try { localStorage.removeItem(AUTH_KEY); localStorage.removeItem(LAST_ACTIVE_KEY); } catch(e) {}
+      showLoginOverlay("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
+    } else {
+      showLoginOverlay();
+    }
   }
   
   syncUsersFromCloud();
+
+  // Kullanıcı hareketlerini dinle ve son aktivite zamanını güncelle (1 dakikada bir yeniler)
+  ["mousedown", "keydown", "touchstart", "scroll"].forEach(ev => {
+    window.addEventListener(ev, () => {
+      if (localStorage.getItem(AUTH_KEY) === "logged_in") {
+        const now = Date.now();
+        if (!window._lastTouch || (now - window._lastTouch > 60000)) {
+          window._lastTouch = now;
+          updateActivity();
+        }
+      }
+    }, { passive: true });
+  });
+
+  // Arka planda veya sekmeye geri dönüldüğünde oturum süresini kontrol et
+  setInterval(checkSessionTimeout, 60000);
+  window.addEventListener("focus", checkSessionTimeout);
 }
 
 if (document.readyState === "loading") {
